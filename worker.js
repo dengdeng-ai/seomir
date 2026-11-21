@@ -1,10 +1,11 @@
 var ALLOW = ['https://xn--2w2b19b12g.love', 'https://dengdeng-ai.github.io'];
 var MODEL = 'claude-sonnet-5-5';
-var MAX_TOKENS = 1200;
+var MAX_TOKENS = 700;
 var MAX_MSGS = 40;
 var MAX_CHARS = 14000;
 var PER_MIN = 12;
 var DAILY = 1500;
+var authMode = null;
 var hits = {}, day = { d: '', n: 0 };
 
 function cors(o) {
@@ -50,8 +51,8 @@ export default {
       if (auth) hd['authorization'] = 'Bearer ' + env.ANTHROPIC_API_KEY; else hd['x-api-key'] = env.ANTHROPIC_API_KEY;
       return fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: hd, body: body });
     }
-    var r = await call(false);
-    if (r.status === 401) r = await call(true);
+    var r = await call(authMode === true);
+    if (r.status === 401) { r = await call(authMode !== true); if (r.status !== 401) authMode = (authMode !== true); }
     if (!r.ok) return out({ error: 'upstream', status: r.status, detail: (await r.text()).slice(0, 300) }, 502, o);
     var j = await r.json();
     var t = (j.content || []).map(function (c) { return c.text || '' }).join('');
