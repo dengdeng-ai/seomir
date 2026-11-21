@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ANGEL HOUSE">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon180.png">
+<link rel="icon" type="image/png" href="icon180.png">
+<title>펑크 걸 메이커</title>
+<link href="https://fonts.googleapis.com/css2?family=Yellowtail&display=swap" rel="stylesheet">
+<style>
+  @font-face{font-family:'G11';src:url('Galmuri11.woff2') format('woff2');font-display:block}
+  @font-face{font-family:'G14';src:url('Galmuri14.woff2') format('woff2');font-display:block}
+  @font-face{font-family:'UC';src:url('UnifrakturCook.woff2') format('woff2');font-weight:700;font-display:block}
+  @font-face{font-family:'CZ';src:url('Cinzel.woff2') format('woff2');font-weight:700;font-display:block}
+  @font-face{font-family:'G9';src:url('Galmuri9.woff2') format('woff2');font-display:block}
+  :root{--k:#2B1E3F;--c:#FFF5F9;--p1:#FBD6E4;--p2:#F4A3C6;--P:#E8508A;--v1:#ECE9FF;--v2:#D6D1F8;--v3:#C3BCF5;--v4:#8F85DC;--v5:#4E4280;--d:rgba(43,30,63,.92)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;width:100%;overflow:hidden}
+  body{font-family:'G11',monospace;font-size:11px;color:var(--k);-webkit-font-smoothing:none;background:var(--k);display:flex;align-items:center;justify-content:center}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  #fit{position:relative;overflow:hidden}
+  #stage{position:absolute;left:0;top:0;width:960px;height:600px;transform-origin:0 0;overflow:hidden;user-select:none;visibility:hidden;
+    background:linear-gradient(rgba(236,233,255,.3),rgba(236,233,255,.3)),url(room.webp) 50% 40%/cover no-repeat}
+  .win{position:absolute;background:var(--v1);border:1px solid var(--k);box-shadow:2px 2px 0 rgba(43,30,63,.35)}
+  .tbar{height:20px;display:flex;align-items:center;gap:3px;padding:0 3px 0 7px;background:linear-gradient(var(--v4),var(--v5));border-bottom:1px solid var(--k);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+  .tbar .t{margin-right:auto;color:#fff;font-family:'G9';font-size:9px;letter-spacing:.12em;text-shadow:1px 1px 0 var(--k)}
+  .tbar .t::before{content:"♥ ";color:var(--p2)}
+  .tbar .x{position:relative;width:13px;height:13px;border:1px solid var(--k);background:var(--v1);box-shadow:inset 1px 1px 0 #fff,inset -1px -1px 0 var(--v3)}
+  .tbar .x::before,.tbar .x::after{content:"";position:absolute;left:2px;right:2px;top:5px;height:1px;background:var(--k);box-shadow:0 1px 0 var(--k)}
+  .tbar .x::before{transform:rotate(45deg)}.tbar .x::after{transform:rotate(-45deg)}
+  .tbar .x:hover{background:var(--p1)}
+  .bd{position:absolute;left:6px;right:6px;top:26px;bottom:6px;background:var(--d);border:1px solid var(--k);box-shadow:0 0 0 1px #fff;color:#fff}
+
+  #miso{position:absolute;left:250px;top:-6px;width:400px;height:614px;image-rendering:auto}
+  #stage.bob #miso{animation:hop .3s steps(2)}@keyframes hop{50%{margin-top:-3px}}
+  body.pt #stage.bob #miso{animation:hopb .3s steps(2)}@keyframes hopb{50%{margin-bottom:3px}}
+
+  #calw{left:16px;top:16px;width:206px;height:122px}
+  #sGoal{font-family:'G9';font-size:9px;color:var(--v3);margin-top:2px}#sGoal.ok{color:var(--p2)}
+  #calw .bd{padding:8px 12px;display:flex;flex-direction:column;gap:3px}
+  #sDate{font-family:'G14';font-size:14px;letter-spacing:.04em}
+  #sDay{font-family:'G11';color:var(--p2);letter-spacing:.1em}
+  #sMoney{font-family:'G11';color:var(--v3)}
+
+  #statw{right:16px;top:16px;width:262px;height:196px}
+  #stats{padding:8px 12px;display:flex;flex-direction:column;gap:6px}
+  .st{display:grid;grid-template-columns:56px 1fr 24px;align-items:center;gap:8px;font-size:11px}
+  .st span{color:var(--v3)}
+  .st i{position:relative;height:9px;background:#3A2E5E;border:1px solid var(--v5)}
+  .st i b{position:absolute;left:0;top:0;bottom:0;background:var(--P);transition:width .4s steps(6)}
+  .st i::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 6px,rgba(43,30,63,.6) 6px 7px)}
+  .st.s i b{background:var(--v4)}.st.l i b{background:#FF7FA8}.st.l span{color:var(--p2)}.st.m i b{background:#FFB3CF}.st.m span{color:var(--p1)}
+  .st em{font-style:normal;text-align:right}
+  .st.up em{color:var(--p2)}.st.dn em{color:var(--v4)}
+
+  #cmdw{right:16px;top:224px;width:262px;height:286px}
+  #cmdw .bd{padding:6px}
+  .cm{display:flex;align-items:center;gap:8px;width:100%;height:30px;padding:0 8px;font-family:'G14';font-size:14px;color:#fff;text-align:left}
+  .cm em{margin-left:auto;font-style:normal;font-family:'G9';font-size:9px;color:var(--v4)}
+  .cm:hover,.cm.on{background:var(--P)}.cm:hover em,.cm.on em{color:#fff}
+  .cm::before{content:"";border-left:5px solid #fff;border-top:4px solid transparent;border-bottom:4px solid transparent;opacity:0}
+  .cm:hover::before,.cm.on::before{opacity:1}
+  #snds{position:absolute;left:14px;right:14px;bottom:8px;display:flex;justify-content:flex-end;gap:10px;font-family:'G9';font-size:9px;color:var(--v4)}
+  #snds button:hover{color:var(--P)}
+
+  #dlg{position:absolute;left:16px;right:294px;bottom:16px;height:100px;z-index:5;background:var(--d) linear-gradient(rgba(232,80,138,.12),transparent 40%);color:#fff;border:1px solid #fff;box-shadow:0 0 0 1px var(--k);padding:16px 16px 8px;font-family:'G14';font-size:14px;line-height:22px;cursor:pointer}
+  #dlg b{position:absolute;left:-1px;top:-27px;background:linear-gradient(var(--v4),var(--v5));color:#fff;border:1px solid #fff;box-shadow:0 0 0 1px var(--k),inset 0 1px 0 rgba(255,255,255,.4);padding:4px 12px 3px;font-weight:400;font-family:'G11';font-size:11px;text-shadow:1px 1px 0 var(--k)}
+  #dlg b::before{content:"♥ ";color:var(--p2)}
+  #next{position:absolute;right:12px;bottom:10px;width:11px;height:10px;background:var(--P);clip-path:polygon(0 25%,25% 0,50% 25%,75% 0,100% 25%,100% 50%,50% 100%,0 50%);opacity:0}
+  #next.on{opacity:1;animation:blk 1s steps(2) infinite}@keyframes blk{50%{opacity:0}}
+
+  #pw{left:150px;top:60px;width:560px;height:360px;z-index:8;display:none}
+  #pw.show{display:block}
+  #pw .pb{position:absolute;left:8px;right:8px;top:28px;bottom:8px;background:var(--c);border:1px solid var(--k);padding:12px 14px;overflow-y:auto}
+  .page{display:none}.page.show{display:block}
+  #shopL h4{font-weight:400;font-family:'G9';font-size:9px;letter-spacing:.2em;color:var(--v4);margin:8px 0 4px}#shopL h4:first-child{margin-top:0}
+  .shp{display:grid;grid-template-columns:30px 1fr auto auto;align-items:center;gap:8px;padding:2px 8px;border:1px solid var(--k);background:#fff;margin-bottom:4px}
+  .shp b{font-weight:400;font-family:'G14';font-size:13px;display:block}.shp small{font-family:'G9';font-size:9px;color:var(--v4)}
+  .shp .pr{font-family:'G11';color:var(--v5)}
+  .shp button{font-family:'G11';padding:3px 10px 2px;background:var(--P);color:#fff;border:1px solid var(--k)}.shp button:disabled{background:var(--v2);color:var(--v4)}
+  #live{position:absolute;left:120px;top:150px;width:720px;height:250px;z-index:12}
+  #live .bd{padding:0;overflow:hidden;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+  #lane{position:absolute;left:0;right:0;top:50%;height:84px;margin-top:-42px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,transparent 1px 40px);border-top:1px dashed var(--v5);border-bottom:1px dashed var(--v5)}
+  #lring{position:absolute;right:70px;top:50%;width:44px;height:44px;margin:-22px -22px 0 0;border:2px solid var(--p2);border-radius:50%;box-shadow:0 0 0 4px rgba(244,163,198,.15)}
+  #lring.hit{animation:lr .2s ease-out}@keyframes lr{0%{transform:scale(1.45);border-color:#fff;box-shadow:0 0 0 8px rgba(255,255,255,.35),0 0 24px var(--P)}}
+  .bst{position:absolute;right:70px;top:50%;width:0;height:0;pointer-events:none}
+  .bst b{position:absolute;left:-22px;top:-22px;width:44px;height:44px;border-radius:50%;border:3px solid #fff;animation:bstr .35s ease-out forwards}
+  .bst.p b{border-color:var(--p2)}
+  @keyframes bstr{to{transform:scale(2.4);opacity:0;border-width:1px}}
+  .bst i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;background:#fff;animation:bsts .4s ease-out forwards}
+  .bst.p i{background:var(--p2)}
+  @keyframes bsts{to{transform:translate(var(--dx),var(--dy)) scale(.3);opacity:0}}
+  #live.shk{animation:shk .12s linear}@keyframes shk{25%{transform:translate(-3px,2px)}75%{transform:translate(3px,-2px)}}
+  body.ph #live.shk{animation:none}
+  #lane.fl{background-color:rgba(232,80,138,.18)}
+  #ljudge.pop{animation:jp .25s ease-out}@keyframes jp{0%{transform:translateX(50%) scale(1.6)}}
+  #lcombo.pop{animation:cp .15s ease-out}@keyframes cp{0%{transform:scale(1.4)}}
+  #lane .nt{position:absolute;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:var(--P);border:2px solid #fff;box-shadow:0 0 0 1px var(--k)}
+  #ljudge{position:absolute;right:70px;top:-30px;transform:translateX(50%);font-size:13px!important;font-family:'G9';font-size:11px;letter-spacing:.1em;color:#fff;white-space:nowrap}
+  #ljudge.p{color:var(--p2)}#ljudge.m{color:var(--v4)}
+  #lcombo{position:absolute;left:16px;top:12px;font-size:13px!important;font-family:'G9';font-size:11px;color:var(--v3);letter-spacing:.1em}
+  #lbar{position:absolute;left:0;bottom:0;height:3px;background:var(--P);width:0}
+  #lstart{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;background:var(--P);color:#fff;border:1px solid #fff;box-shadow:0 0 0 1px var(--k);padding:9px 22px 6px;font-family:'G14';font-size:15px}
+  #lres{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-family:'G14';font-size:26px;color:var(--P);text-shadow:2px 2px 0 var(--k);z-index:3;display:none}
+  body.ph #live{transform:scale(1.25);transform-origin:50% 50%}
+  #cho{position:absolute;right:300px;bottom:130px;width:230px;z-index:9;animation:chIn .18s steps(3)}@keyframes chIn{from{transform:translateY(8px);opacity:0}}
+  #cho .bd{position:relative;left:auto;right:auto;top:auto;bottom:auto;margin:6px;padding:6px}
+  #cho .cm{height:30px}
+  body.ph #cho{right:auto;left:290px;bottom:130px;transform:scale(1.25);transform-origin:0 100%}
+  #invp{position:absolute;inset:6px;display:none;flex-direction:column;background:var(--d)}
+  #cmdw.iv #invp{display:flex}#cmdw.iv .cm,#cmdw.iv #snds{visibility:hidden}
+  #invp .ih{display:flex;justify-content:space-between;align-items:center;padding:0 4px 4px;border-bottom:1px dashed var(--v5);margin-bottom:5px;font-family:'G9';font-size:9px;color:var(--v4);letter-spacing:.2em}
+  #invBack{font-family:'G9';font-size:9px;color:var(--p2);letter-spacing:.05em}#invBack:hover{color:#fff}
+  #inv{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:4px;min-height:0}
+  #inv .slot{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:rgba(255,255,255,.04);border:1px solid var(--v5);color:#fff;font-family:'G9';font-size:9px}
+  #inv .slot:not(.empty):hover,#inv .slot.on{background:var(--P);border-color:#fff}
+  #inv .slot{position:relative}#inv .slot .cnt{position:absolute;right:3px;bottom:2px;font-style:normal;font-family:'G9';font-size:9px;color:var(--p2)}#inv .slot.on .cnt{color:#fff}
+  #inv .slot.empty{background:rgba(0,0,0,.18);border:1px dashed var(--v5);box-shadow:inset 1px 1px 0 rgba(0,0,0,.3)}
+  body.ph #inv .slot span{display:none}
+  .entry{border:1px solid var(--k);background:#fff}.entry+.entry{margin-top:8px}
+  .entry .eh{display:flex;justify-content:space-between;align-items:center;background:var(--v1);padding:5px 10px;border-bottom:1px solid var(--k);font-family:'G14';font-size:14px}
+  .entry .eh span:last-child{font-family:'G9';font-size:9px;color:var(--v4)}
+  .entry p{padding:6px 10px 8px;line-height:18px;font-family:'G11';font-size:11px;background:repeating-linear-gradient(transparent 0 17px,var(--v2) 17px 18px);background-position:0 6px}
+  #acts{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px}
+  .act{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:6px;width:100%;min-width:0;padding:2px 6px;border:1px solid var(--k);background:#fff;text-align:left}
+  .act:hover{background:var(--p1)}.act.no{opacity:.45}
+  .act b{font-weight:400;display:block;font-family:'G14';font-size:14px}
+  .act small{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+  .act small i{font-style:normal;font-family:'G9';font-size:9px;padding:0 4px;background:var(--v1);border:1px solid var(--v3)}
+  .act small i.p{background:var(--p1);border-color:var(--p2)}
+  .act .c{font-family:'G9';font-size:9px;color:var(--v4)}
+  .sfoot{font-family:'G9';font-size:9px;color:var(--v4);margin-top:2px}
+  .sl{display:grid;grid-template-columns:48px 1fr auto auto;align-items:center;gap:8px;padding:9px 10px;border:1px solid var(--k);background:#fff;margin-bottom:6px}
+  .sl .n{font-family:'G9';font-size:9px;color:#fff;background:var(--v5);text-align:center;padding:3px 0}
+  .sl .i{line-height:16px}.sl .i small{display:block;font-family:'G9';font-size:9px;color:var(--v4)}
+  .sl button{font-family:'G9';font-size:9px;padding:3px 8px;border:1px solid var(--k);background:var(--v1);box-shadow:inset 1px 1px 0 #fff,inset -1px -1px 0 var(--v3)}
+  .sl button:hover{background:var(--p1)}.sl button.warn{background:var(--P);color:#fff}
+  .sl button:disabled{opacity:.35;pointer-events:none}
+  .sl.new{background:var(--c)}
+  .endw{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:280px;text-align:center}
+  .endw small{font-family:'G9';font-size:9px;color:var(--v4);letter-spacing:.15em}
+  .endw b{font-weight:400;font-family:'G14';font-size:28px;line-height:32px;color:var(--P);text-shadow:2px 2px 0 var(--p1)}
+  .endw span{font-family:'G9';font-size:9px;max-width:400px;line-height:14px}
+  #endL{font-family:'G11';font-size:11px;line-height:18px;max-width:440px;white-space:pre-line;color:var(--k)}#endL:empty{display:none}
+  .endw button{margin-top:6px;font-family:'G11';padding:5px 14px 4px;background:var(--P);color:#fff;border:1px solid var(--k)}
+  .days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px}
+  .dy{height:70px;border:1px solid var(--k);background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:3px;gap:1px;font-family:'G9';font-size:9px}
+  .dy .w{color:var(--v4)}.dy.we .w{color:var(--P)}
+  .dy .n{font-family:'G11';font-size:11px}
+  .dy .a{color:var(--k)}
+  .dy .sp{margin-top:1px}
+  .dy.sel{background:var(--p1);box-shadow:inset 0 0 0 2px var(--P)}
+  .dy.empty .a{color:var(--v3)}
+  .act{padding:1px 10px;margin-bottom:4px}
+  .act b{font-size:11px;font-family:'G11'}
+  .pfoot{display:flex;align-items:center;gap:8px;margin-top:6px}
+  .pfoot span{margin-right:auto;font-family:'G9';font-size:9px;color:var(--v4)}
+  .pfoot button{font-family:'G11';padding:4px 12px 3px;border:1px solid var(--k);background:var(--v1);box-shadow:inset 1px 1px 0 #fff,inset -1px -1px 0 var(--v3)}
+  .pfoot button:hover{background:var(--p1)}
+  .pfoot #runB{background:var(--P);color:#fff;box-shadow:none}
+  .pfoot #runB:disabled{opacity:.4;pointer-events:none}
+  #stage.busy .cm{pointer-events:none;opacity:.5}#stage.busy #cho .cm{pointer-events:auto;opacity:1}
+  #miso{cursor:pointer}
+  #emote{position:absolute;left:560px;top:70px;z-index:4;font-size:34px;color:var(--P);opacity:0;text-shadow:2px 2px 0 #fff,-2px -2px 0 #fff,2px -2px 0 #fff,-2px 2px 0 #fff;pointer-events:none}
+  #emote.on{opacity:1;animation:pop .4s steps(3)}@keyframes pop{0%{transform:translateY(8px)}}
+  #emote.bad{color:var(--v4)}#emote.bad.on{animation:drop 1s steps(6) both}@keyframes drop{0%{opacity:0;transform:translateY(-6px)}20%{opacity:1;transform:none}100%{opacity:0;transform:translateY(14px)}}
+  .stf{position:absolute;z-index:9;font-family:'G11';font-size:11px;color:#fff;background:var(--P);border:1px solid #fff;padding:1px 6px;pointer-events:none;animation:stf 1.6s steps(8) forwards}
+  .stf.dn{background:var(--v5)}
+  @keyframes stf{0%{opacity:0;transform:translateY(6px)}15%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+  .sp{display:block;flex:none;width:var(--s);height:var(--s);background-repeat:no-repeat;background-size:calc(var(--s) * 12) var(--s);background-position:0 0;image-rendering:pixelated}
+
+  #title{position:absolute;inset:0;z-index:20;background:linear-gradient(rgba(236,233,255,.25),rgba(236,233,255,.25)),url(room.webp) 50% 40%/cover no-repeat}
+  #title.hidden{display:none}
+  body.rm1 #stage{background:url(punkroom.webp) 50% 40%/cover no-repeat}
+  body.rm1 #title{background:url(punkroom.webp) 50% 40%/cover no-repeat}
+  body.rm1 #miso,body.rm1 #tmiso{filter:contrast(1.08) saturate(1.12)}
+  #tmiso{position:absolute;right:10px;bottom:-40px;width:340px;height:522px;image-rendering:auto}
+  #logo{position:absolute;left:50%;top:70px;transform:translateX(-50%);image-rendering:pixelated}
+  #tmw{position:absolute;left:50%;bottom:54px;width:160px;transform:translateX(-50%);display:flex;flex-direction:column;gap:2px;padding:6px 0;background:rgba(43,30,63,.78);box-shadow:0 0 0 1px #fff}
+  #tmw .cm{justify-content:center;height:26px;padding:0;font-size:15px;text-shadow:2px 2px 0 var(--k);background:none}
+  #tmw .cm:hover,#tmw .cm.on{background:none;color:#FFC8E2}
+  #tmw .cm{position:relative}
+  #tmw .cm::before{position:absolute;left:14px}
+  #tmw .cm.dis{opacity:.35;pointer-events:none}
+
+  #pov{position:absolute;inset:0;z-index:30;background:var(--k);display:none}
+  #pov.show{display:block}
+  #pov iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  #povX{position:absolute;right:16px;top:14px;z-index:2;background:#fff;border:1px solid var(--k);padding:8px 16px 7px;font-family:'G11';font-size:15px}
+  body.ph #calw{transform:scale(1.25);transform-origin:0 0}
+  body.ph #statw{width:222px;transform:scale(1.42);transform-origin:100% 0}
+  body.ph #cmdw{top:302px;width:222px;height:207px;transform:scale(1.42);transform-origin:100% 0}
+  body.ph #cmdw .cm{height:20px;font-size:13px}
+  body.ph #pw{left:16px;top:8px;transform:scale(1.06);transform-origin:0 0}
+  body.ph #dlg{width:476px;transform:scale(1.25);transform-origin:0 100%}
+
+  body.pt #miso{left:50%;margin-left:-144px;top:auto;bottom:182px;width:352px;height:540px}
+  body.pt #calw{left:8px;top:8px;width:172px;height:118px}
+  body.pt #calw .bd{padding:6px 10px}
+  body.pt #dlg{left:8px;right:8px;top:auto;bottom:254px;height:94px}
+  body.pt #statw{left:8px;right:auto;top:auto;bottom:48px;width:204px;height:196px}
+  body.pt #cmdw{right:8px;top:auto;bottom:8px;width:196px;height:236px}
+  body.pt #cmdw .cm{height:25px;font-size:13px;padding:0 6px}
+  body.pt #cmdw .cm em{display:none}
+  body.pt #pw{left:8px;top:40px;width:404px;height:470px}
+  body.pt #acts{grid-template-columns:1fr}
+  body.pt .act small i{font-size:8px}
+  body.pt #cho{left:auto;right:8px;bottom:366px;width:230px}
+  body.pt #live{left:8px;top:190px;width:404px;height:220px}
+  body.pt #emote{left:290px;top:60px}
+  body.pt #tmiso{right:50%;margin-right:-170px;bottom:-60px;width:340px;height:522px}
+  body.pt #logo{top:50px;transform:translateX(-50%) scale(.56);transform-origin:50% 0}
+  body.pt #tmw{bottom:70px}
+  body.pt #snds{bottom:6px}
+  #ptfade{display:none}
+  body.pt #statw,body.pt #cmdw{z-index:4}
+  body.pt #ptfade{display:block;position:absolute;left:0;right:0;top:auto;height:400px;bottom:0;z-index:3;pointer-events:none;background:linear-gradient(rgba(43,30,63,0),rgba(43,30,63,.85) 120px,var(--k) 150px)}
+  body.pt .pfoot span{display:none}
+  body.pt .pfoot{justify-content:flex-end;gap:6px}
+  body.pt .pfoot button{padding:4px 8px 3px;white-space:nowrap}
+  body.pt #inv .slot .cnt{top:2px;bottom:auto}
+  #say i.mv{font-style:normal;color:#B9B0DC;opacity:.75;margin:0 2px}
+  #dlg.mir b{background:linear-gradient(#5B4F86,#2B1E3F)!important}#dlg.mir b::before{color:#fff!important}#dlg.mir #say{color:#E4DEFF}
+  #itip{position:absolute;z-index:30;display:none;pointer-events:none;max-width:190px;background:var(--k);color:#fff;border:1px solid #fff;box-shadow:0 0 0 1px var(--k);padding:5px 8px 4px;font-family:'G11';font-size:11px;line-height:15px}#itip b{display:block;font-weight:400;color:var(--p2)}#itip span{display:block}#itip em{display:block;font-style:normal;color:#C9C4F4;margin-top:2px}
+</style>
+<style>img,canvas{-webkit-user-drag:none;-webkit-touch-callout:none}</style></head>
+<body><script>document.addEventListener('contextmenu',function(e){e.preventDefault()});document.addEventListener('dragstart',function(e){e.preventDefault()});</script>
+
+<div id="fit"><div id="stage">
+  <img id="miso" src="home_smile.webp" alt="채미소">
+  <div id="ptfade"></div>
+
+  <div class="win" id="calw"><div class="tbar"><span class="t">CALENDAR</span></div><div class="bd"><b id="sDate"></b><span id="sDay"></span><span id="sMoney"></span><span id="sGoal"></span></div></div>
+  <div class="win" id="statw"><div class="tbar"><span class="t">STATUS</span></div><div class="bd"><div id="stats"></div></div></div>
+  <div class="win" id="cmdw"><div class="tbar"><span class="t">COMMAND</span></div><div class="bd">
+    <button class="cm" data-c="sched">스케줄<em>SCHEDULE</em></button>
+    <button class="cm" data-c="talk">대화하기<em>TALK</em></button>
+    <button class="cm" data-c="inven">인벤토리<em>ITEM</em></button>
+    <button class="cm" data-c="shop">상점<em>SHOP</em></button>
+    <button class="cm" data-c="diary">다이어리<em>DIARY</em></button>
+    <button class="cm" data-c="save">세이브 / 로드<em>SAVE</em></button>
+    <button class="cm" data-c="title">타이틀로<em>TITLE</em></button>
+    <div id="snds"><button id="bgmb"></button><button id="snd"></button></div>
+    <div id="invp"><div class="ih"><button id="invBack">◀ MENU</button><span>INVENTORY</span></div><div class="inv" id="inv"></div></div>
+  </div></div>
+
+  <div id="emote">♥</div>
+  <div id="dlg"><b>채미소</b><span id="say"></span><i id="next"></i></div>
+
+  <div class="win" id="pw"><div class="tbar"><span class="t" id="pwt"></span><button class="x" id="pwX" aria-label="닫기"></button></div><div class="pb">
+    <div class="page" id="p-sched"><div class="days" id="days"></div><div id="acts"></div><div class="pfoot"><span id="sHint"></span><button id="rptB">지난주 그대로</button><button id="clrB">지우기</button><button id="runB">일주일 시작 ▶</button></div></div>
+    <div class="page" id="p-save"><div id="slots"></div></div>
+    <div class="page" id="p-shop"><div id="shopL"></div></div>
+    <div class="page" id="p-diary"><div id="diaryL"></div></div>
+    <div class="page" id="p-ending"><div class="endw"><small>2004 – 2005 · 채미소의 1년</small><b id="endT"></b><span id="endS"></span><p id="endL"></p><button id="endB">타이틀로</button></div></div>
+  </div></div>
+
+  <div id="title">
+    <img id="tmiso" src="home_winksmile.webp" alt="">
+    <canvas id="logo"></canvas>
+    <div id="tmw">
+      <button class="cm" id="tNew">새로 시작</button>
+      <button class="cm" id="tCont">이어하기</button>
+    </div>
+  </div>
+
+  <div id="pov"><iframe id="povF" title="미소의 파르페 가게"></iframe><button id="povX">닫기 ✕</button></div>
+</div></div>
+
+<script>(function(){var st=document.getElementById('stage'),f=document.getElementById('fit');function r(){var pt=innerHeight>innerWidth;document.body.classList.toggle('pt',pt);var SW=pt?Math.max(420,760*innerWidth/innerHeight):960,SH=pt?Math.max(760,420*innerHeight/innerWidth):600,s=Math.min(innerWidth/SW,innerHeight/SH,2.5);if(!pt)s=Math.min(s,1.3);st.style.width=SW+'px';st.style.height=SH+'px';st.style.transform='scale('+s+')';f.style.width=SW*s+'px';f.style.height=SH*s+'px'}addEventListener('resize',r);r()})();</script>
+<script src="three.min.js"></script>
+<script src="lowpoly.js"></script>
+<script src="sfx.js"></script>
+<script src="ai.js"></script>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var PARF=['parfait','icecream','cream','cherry'];
+  var SC={};function stripOf(k){if(!SC[k])SC[k]=k==='parf'?LP.strip(function(){return LP.drink(PARF)},48,64,12,.18):LP.strip(function(){return LP.item(k)},48,48,12);return SC[k]}
+  function spEl(k,size){var e=document.createElement('i');e.className='sp';e.style.cssText='--s:'+size+'px;background-image:url('+(k[0]==='@'?k.slice(1):stripOf(k))+')';return e}
+  function mvar(el){var w=el.getBoundingClientRect().width*(devicePixelRatio||1);return w<=440?'_400':w<=700?'_640':''}
+  function preload(){['smile','happy','wink','winksmile','frown','shy'].forEach(function(f){var im=new Image();im.src=(S&&S.outfit==='parfait'?'miso_':'home_')+f+mvar($('miso'))+'.webp'})}preload();var rzT=null;addEventListener('resize',function(){clearTimeout(rzT);rzT=setTimeout(function(){preload();face($('miso').dataset.f||'smile')},250)});
+  function face(f){$('miso').dataset.f=f;$('miso').src=(S&&S.outfit==='parfait'?'miso_':'home_')+f+mvar($('miso'))+'.webp';var s=$('stage');s.classList.remove('bob');void s.offsetWidth;s.classList.add('bob')}
+  var sayEl=$('say'),nextEl=$('next'),timer=null,full='';
+  function say(t,w){who(w);clearInterval(timer);full=t;sayEl.textContent='';nextEl.classList.remove('on');var i=0;timer=setInterval(function(){i++;if(i%3===0&&full[i-1]!==' ')SFX.type();paint(full.slice(0,i));if(i>=full.length)done()},40)}
+  function paint(t){if(!/\(/.test(t)){sayEl.textContent=t;return}sayEl.innerHTML='';t.split(/(\([^)]*\)?)/).forEach(function(p){if(!p)return;if(p[0]==='('){var e=document.createElement('i');e.className='mv';e.textContent=p.replace(/^\(|\)$/g,'');sayEl.appendChild(e)}else sayEl.appendChild(document.createTextNode(p))})}
+  function done(){clearInterval(timer);timer=null;paint(full);nextEl.classList.add('on')}
+  $('dlg').onclick=function(e){if(timer){done();return}if(SCR){nextScr();return}skip()};
+  $('stage').addEventListener('click',function(e){if(e.target.closest('#dlg,.win,#cho,button,input,textarea,a,#itip,#live,#povX'))return;if(document.getElementById('live')||$('pw').classList.contains('show'))return;if(!($('stage').classList.contains('busy')||SCR))return;if(timer){done();return}if(SCR){nextScr();return}skip()});
+  function who(w){$('dlg').querySelector('b').textContent=w||'채미소';$('dlg').classList.toggle('mir',!!w)}
+  function line(l){say(l[0],l[2]);if(!l[2])face(l[1])}
+  var SCR=null;function playScr(L,cb){if(!L||!L.length){cb();return}SCR={L:L,i:0,cb:cb};line(L[0])}
+  function nextScr(){var r=SCR;r.i++;if(r.i>=r.L.length){SCR=null;r.cb();return}line(r.L[r.i]);SFX.blip&&SFX.blip()}
+  var emT=null;function emote(bad){var e=$('emote');e.textContent=bad?'−♥':'+♥';e.classList.toggle('bad',!!bad);e.classList.remove('on');void e.offsetWidth;e.classList.add('on');clearTimeout(emT);emT=setTimeout(function(){e.classList.remove('on')},1000)}
+
+  var TT={sched:'SCHEDULE',save:'SAVE / LOAD',ending:'ENDING',shop:'SHOP',diary:'DIARY'};
+  function openW(k){document.querySelectorAll('.cm[data-c]').forEach(function(c){if(c.dataset.c!=='talk'||k)c.classList.toggle('on',c.dataset.c===k)});
+    if(!k){$('pw').classList.remove('show');return}
+    $('pw').classList.add('show');$('pwt').textContent=TT[k];document.querySelectorAll('#pw .page').forEach(function(p){p.classList.toggle('show',p.id==='p-'+k)});
+    if(k==='sched'){renderActs();say('오늘은 뭐 할까요? 골라줘요!');face('smile')}
+    if(k==='shop'){renderShop();say('뭐 살까요? 용돈은 아껴 써야 되는데...');face('winksmile')}
+    if(k==='save'){renderSlots();say('여기까지 저장해 둘까요?');face('smile')}
+    if(k==='diary'){renderDiary();say('허걱, 일기장 보시게요? 진짜 조금만 보셔야 돼요.');face('shy')}}
+  var BAG=[['guitar','김말이','제 기타 이름은 김말이예요. 악보는 못 읽어도 귀로 다 따요!','winksmile'],['phone','폴더폰','폰고리 전부 뽑기방에서 뽑은 거예요. 폰보다 고리가 더 무거워요.','winksmile'],['@lp_candy.png','츄파춥스','체리맛 아니면 안 먹어요. 진짜로요.','happy','lolli',{mood:8},'체리맛 최고! 기분 좋아졌어요.'],['gumpack','풍선껌','이건 선배 거예요. ...하나 몰래 먹은 건 비밀이에요.','shy','gum',{stress:-10},'풍선 엄청 크게 불었어요! 스트레스 날아갔다!'],['book','인소','귀여니 인소는 밤새서 읽는 거예요. 진리.','smile','book',{mood:5,stress:-5},'인소 한 권 순삭했어요. 역시 귀여니!'],['cd','펑크','체리필터 들으면 기타 막 치고 싶어져요.','winksmile','cd',{gtr:3,mood:3},'체리필터 틀어놓고 따라 쳤어요! 손이 막 풀려요.']];
+  var INM={lolli:'츄파춥스',gum:'풍선껌',book:'인소',cd:'펑크 CD'};
+  var ITD={'김말이':'채미소의 흰색 일렉기타.','폴더폰':'키링이 주렁주렁 달린 폴더폰.','츄파춥스':'체리맛 츄파춥스.','풍선껌':'선배가 달고 사는 풍선껌.','인소':'귀여니 인소 책.','펑크':'체리필터 CD.'};
+  var TN={gtr:'기타',gpa:'학점',hp:'체력',mood:'기분',stress:'스트레스',love:'호감도',mir:'연애'};
+  function hideTip(){var t=$('itip');if(t)t.style.display='none'}
+  function showTip(b,it){var t=$('itip');if(!t){t=document.createElement('div');t.id='itip';$('stage').appendChild(t)}
+    var h='<b>'+it[1]+'</b><span>'+(ITD[it[1]]||'')+'</span>';
+    if(it[5]){var f=[];for(var k in it[5])f.push((TN[k]||k)+' '+(it[5][k]>0?'+':'')+it[5][k]);h+='<em>하루 한 번 · '+f.join(', ')+'</em>'}
+    t.innerHTML=h;t.style.display='block';
+    var st=$('stage'),sr=st.getBoundingClientRect(),k=sr.width/st.offsetWidth,r=b.getBoundingClientRect(),
+      x=(r.right-sr.left)/k-t.offsetWidth,y=(r.top-sr.top)/k-t.offsetHeight-4;
+    if(y<4)y=(r.bottom-sr.top)/k+4;x=Math.max(4,Math.min(x,st.offsetWidth-t.offsetWidth-4));t.style.left=x+'px';t.style.top=y+'px'}
+  function buildInv(){var w=$('inv');w.innerHTML='';var I=INV(),n=0;BAG.forEach(function(it){var id=it[4];if(id&&!I[id])return;n++;var b=document.createElement('button');b.className='slot';b.appendChild(spEl(it[0],30));var t=document.createElement('span');t.textContent=it[1];b.appendChild(t);
+    if(id){var c=document.createElement('em');c.className='cnt';c.textContent='×'+I[id];b.appendChild(c)}
+    b.onclick=function(){if(id&&b.classList.contains('on')){useItem(it);return}document.querySelectorAll('#inv .slot').forEach(function(x){x.classList.remove('on')});b.classList.add('on');say(it[2]);face(it[3]);emote();SFX.blip&&SFX.blip()};b.onmouseenter=function(){showTip(b,it)};b.onmouseleave=hideTip;w.appendChild(b)});for(var i=n;i<9;i++){var e=document.createElement('div');e.className='slot empty';w.appendChild(e)}}
+  function useItem(it){var I=INV();if(S.end)return;if(S.ud===S.d){say('오늘은 이미 하나 썼어요. 내일 또 써요!');face('winksmile');return}if(!I[it[4]])return;
+    I[it[4]]--;S.ud=S.d;kgAdd({lolli:.2,gum:0,book:.3,cd:0}[it[4]]||0);var f=apply(it[5]);saveS();renderS(f);floatFx(f,0);say(it[6]);face('happy');emote();SFX.pop&&SFX.pop(3);buildInv()}
+  $('invBack').onclick=function(){hideTip();$('cmdw').classList.remove('iv');SFX.blip&&SFX.blip()};
+  function renderDiary(){var w=$('diaryL');w.innerHTML='';var L=(S.diary||[]).slice();L.unshift({d:'2004-03-02',h:'입학식',t:'드디어 입학! 근데 강의실 찾다가 30분 늦었다. 길치 인생 어디 안 감. 밴드부 동아리방은 한 번에 찾음. 이건 운명인 듯.'});
+    L.reverse().forEach(function(x){var e=document.createElement('div');e.className='entry';e.innerHTML='<div class="eh"><span></span><span></span></div><p></p>';var sp=e.querySelectorAll('span');sp[0].textContent=x.h;sp[1].textContent=x.d.replace(/-/g,'. ');e.querySelector('p').textContent=x.t;w.appendChild(e)})}
+  $('pwX').onclick=function(){openW(null)};
+
+  function openGame(){$('pov').classList.add('show');$('povF').src='game.html';SFX.bgmHold(true)}
+  function closeGame(){$('pov').classList.remove('show');$('povF').removeAttribute('src');SFX.bgmHold(false)}
+  var STK=[['gtr','기타',''],['gpa','학점',''],['hp','체력',''],['mood','기분',''],['stress','스트레스','s'],['love','호감도','l'],['mir','연애','m']];
+  var S0={d:'2004-03-01',money:30000,gtr:12,gpa:30,hp:80,mood:60,stress:20,love:0,mir:20,lt:0,ev:{},last:'',inv:{lolli:3,gum:2,book:1,cd:0},ud:''};
+  var GOALS=[['2004-04-20','중간고사','gpa',40],['2004-05-28','정기공연','gtr',40],['2004-06-18','기말고사','gpa',50],['2004-08-14','여름 버스킹','gtr',50],['2004-10-22','2학기 중간고사','gpa',55],['2004-11-12','가을 공연','gtr',65],['2004-12-17','2학기 기말고사','gpa',60],['2005-02-05','겨울 클럽 공연','gtr',70]];
+  function INV(){if(!S.inv)S.inv={lolli:3,gum:2,book:1,cd:0};return S.inv}
+  var S;try{S=JSON.parse(localStorage.getItem('cb-sim'))}catch(e){}
+  if(!S||!S.d)S=JSON.parse(JSON.stringify(S0));
+  function saveS(){try{localStorage.setItem('cb-sim',JSON.stringify(S))}catch(e){}}
+  var WD=['SUN','MON','TUE','WED','THU','FRI','SAT'],WK=['일','월','화','수','목','금','토'];
+  function dObj(){var p=S.d.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+  function won(n){return '₩'+String(Math.max(0,n)).replace(/\B(?=(\d{3})+(?!\d))/g,',')}
+  function cl(v){return Math.max(0,Math.min(100,Math.round(v)))}
+  STK.forEach(function(s){var d=document.createElement('div');d.className='st '+s[2];d.id='st-'+s[0];d.innerHTML='<span>'+s[1]+'</span><i><b></b></i><em></em>';$('stats').appendChild(d)});
+  function renderS(fx){if(fx&&fx.love)emote(fx.love<0);applyRoom();var mf=$('miso').dataset.f||'smile',ms=(S.outfit==='parfait'?'miso_':'home_')+mf+mvar($('miso'))+'.webp';if($('miso').getAttribute('src')!==ms)$('miso').src=ms;var d=dObj();$('sDate').textContent=S.d.replace(/-/g,'.');$('sDay').textContent=WD[d.getDay()]+' · '+term();if(S.kg==null)S.kg=44;$('sMoney').textContent=won(S.money)+' · '+S.kg.toFixed(1)+'kg';var G=GOALS.filter(function(g){return g[0]>=S.d})[0];if(G){var dd=Math.round((new Date(G[0])-new Date(S.d))/864e5);$('sGoal').textContent=G[1]+' '+(dd?'D-'+dd:'D-DAY')+' · '+{gpa:'학점',gtr:'기타'}[G[2]]+' '+G[3]+'↑';$('sGoal').classList.toggle('ok',S[G[2]]>=G[3])}else $('sGoal').textContent='';
+    STK.forEach(function(s){var el=$('st-'+s[0]);el.querySelector('b').style.width=S[s[0]]+'%';el.querySelector('em').textContent=S[s[0]];
+      el.classList.remove('up','dn');if(fx&&fx[s[0]]){void el.offsetWidth;el.classList.add(fx[s[0]]>0?'up':'dn');setTimeout(function(){el.classList.remove('up','dn')},1800)}})}
+  function stage(){var l=S.love;return l<20?['하숙집 손님','아직 어색하지만 친절하게 대함']:l<50?['친한 사이','편하게 장난도 침']:l<80?['단짝','속얘기도 꺼내고 많이 의지함']:['베프','제일 편한 사람, 무슨 얘기든 다 함']}
+  function apply(fx){if(S.mir==null)S.mir=20;var real={};for(var k in fx){if(k==='money'){S.money=Math.max(0,S.money+fx[k]);continue}var o=S[k];S[k]=cl(S[k]+fx[k]);if(S[k]!==o)real[k]=S[k]-o}return real}
+  function floatFx(fx,money,got){var names={gtr:'기타',gpa:'학점',hp:'체력',mood:'기분',stress:'스트레스',love:'호감도',mir:'연애'},i=0;
+    if(fx&&fx.love)emote(fx.love<0);
+    var list=[];for(var k in fx)list.push([names[k],fx[k],k==='stress'?-fx[k]:fx[k]]);if(money)list.push(['용돈',money,money]);(got||[]).forEach(function(n){list.push([n,1,1])});
+    list.forEach(function(x){var f=document.createElement('div');f.className='stf'+(x[2]<0?' dn':'');f.textContent=x[0]+' '+(x[1]>0?'+':'')+(x[0]==='용돈'?x[1].toLocaleString():x[1]);
+      var PT=document.body.classList.contains('pt');f.style.right=((PT?16:290)+(i%2)*92)+'px';f.style.top=((PT?$('stage').offsetHeight-460:40)+Math.floor(i/2)*22)+'px';f.style.animationDelay=(i*0.12)+'s';$('stage').appendChild(f);setTimeout(function(){f.remove()},2600);i++})}
+  function loveUp(n){if(n>0){if(S.lt>=6)return;n=Math.min(n,6-S.lt);S.lt+=n}var o=S.love;S.love=cl(S.love+n);if(S.love!==o){saveS();renderS({love:S.love-o})}}
+
+  var ACTS=[
+    {id:'class',name:'수업 듣기',ic:'book',fx:{gpa:6,hp:-8,mood:-4,stress:10},
+      L:[['교수님이 제 대답 듣고 좋은 질문이래요! 헐, 저 철학 체질인가 봐요.','happy',1],['수업 시간에 안 졸았어요! ...한 번밖에.','winksmile',0],['강의실 찾다가 또 늦을 뻔했어요. 길치 인생 진짜.','shy',0],['철학개론 듣고 왔어요. 칸트 아저씨는 왜 이렇게 말을 어렵게 해요? 하나도 모르겠어요.','frown',-1]]},
+    {id:'band',name:'밴드 연습',ic:'guitar',fx:{gtr:6,hp:-10,mood:5},
+      L:[['오늘 F코드 한 번에 잡았어요! 헐 저 천재인가 봐요.','happy',1],['동아리방에서 세 시간 쳤더니 손가락 아파요. 그래도 좋아요!','smile',0],['합주하다 줄 끊어졌어요. 김말이 미안해...','shy',-1]]},
+    {id:'work',name:'파르페 가게 알바',ic:'parf',fx:{hp:-12,stress:8},game:1},
+    {id:'play',name:'같이 놀러 가기',ic:'gumpack',fx:{mood:10,stress:-12,hp:-5,love:3},money:-8000,
+      L:[['뽑기방에서 키링 또 뽑았어요! 오늘 운 좋다!','happy',1],['오락실 펌프 봤죠? 저 펌프는 진짜 잘해요!','happy',0],['노래방에서 트로트 부른 거 비밀로 해줘요. 헤헤.','winksmile',0],['비 와서 아무 데도 못 가고 편의점에서 컵라면만 먹었어요...','frown',-1]]},
+    {id:'rest',name:'방에서 쉬기',ic:'house',fx:{hp:16,stress:-8,mood:2},
+      L:[['오늘은 아무것도 안 하는 날이에요. 이것도 철학이에요.','winksmile',1],['하루 종일 인소 읽었어요. 늑대의 유혹 세 번째 정독!','smile',0],['낮잠 잤더니 머리 다 눌렸어요. 보지 마요!','shy',0],['쉬려고 했는데 옆방 공사 소리 때문에 한숨도 못 잤어요.','frown',-1]]},
+    {id:'skip',name:'수업 째기',ic:'phone',fx:{gpa:-4,hp:4,mood:8},
+      L:[['수업 째고 레코드 가게 갔다 왔어요! 완전 이득!','happy',1],['오늘 수업 쨌어요. 쉿, 비밀이에요.','winksmile',0],['수업 쨌는데 하필 오늘 출석 불렀대요... 망했다.','frown',-1]]}
+  ];
+  var EVT=[
+    {cls:1,p:.08,t:'오늘 학교 가는 길에 비둘기 떼 만났어요... 진짜 무서웠어요.',f:'frown',fx:{mood:-8,stress:5}},
+    {p:.08,t:'주인아주머니가 반찬 남았다고 주셨어요! 오늘 저녁 대박.',f:'happy',fx:{hp:8,mood:4}},
+    {cls:1,p:.06,t:'정문 찾다가 기숙사 쪽으로 가버렸어요. 길치 인생...',f:'shy',fx:{hp:-4,stress:3}},
+    {p:.06,t:'엄마가 용돈 보내줬어요! 미소 헤어샵 만세!',f:'happy',fx:{mood:5},money:20000}
+  ];
+  function exam(min,name,good,bad){return function(){var ok=S.gpa>=min;return ok?{t:good,f:'happy',fx:{mood:12,stress:-15,gpa:4}}:{t:bad,f:'frown',fx:{mood:-12,stress:10,gpa:-5}}}}
+  function show(min,good,bad){return function(){return {t:'',f:'happy',rhythm:{min:min,good:good,bad:bad}}}}
+  function mg(min,hi,lo){return function(){var x=S.mir>=min?hi:lo;return x?{t:x[0],f:x[1],fx:x[2]}:null}}
+  function ev_(t,f,fx,money){return function(){return {t:t,f:f,fx:fx||{},money:money||0}}}
+  var SPECIAL={
+    '2004-03-26':ev_('밴드부 MT 다녀왔어요! 선배들 술 게임 진짜 무서워요.','shy',{mood:8,hp:-10}),
+    '2004-04-20':exam(40,'','중간고사 끝! 생각보다 잘 본 것 같아요. 헐 저 철학 체질인가?','중간고사 망했어요... 칸트 아저씨 미워요.'),
+    '2004-05-05':ev_('어린이날이라고 엄마가 용돈 보내줬어요. 저 21살인데요.','winksmile',{mood:5},20000),
+    '2004-05-20':mg(40,['축제 주점 끝나고 선배랑 둘이 옥상 올라갔어요. 별은 하나도 안 보였는데 괜찮았어요.','shy',{mir:4,mood:12,hp:-8}],['축제 주점에서 파전 부쳤어요! 기름 냄새 아직도 나요.','happy',{mood:12,hp:-8,stress:-6}]),
+    '2004-05-28':show(40,'정기공연 대성공! 무대에서 김말이 완전 날아다녔어요!','공연에서 코드 틀렸어요... 다음엔 진짜 연습 더 할 거예요.'),
+    '2004-06-18':exam(50,'','기말고사까지 끝! 이번 학기 저 좀 멋졌죠?','기말 끝났는데... 성적표 오기 전에 도망갈래요.'),
+    '2004-06-21':ev_('종강이에요! 이제 여름방학! 수업 없다!','happy',{mood:10,stress:-10}),
+    '2004-07-06':ev_('오늘 제 생일이에요! 헐, 기억해 준 거예요? 감동이에요.','happy',{mood:15,love:5}),
+    '2004-08-05':mg(50,['바다에서 선배가 빌린 바이크 뒤에 태워줬어요! 꽉 잡으라고 해서... 꽉 잡았어요.','shy',{mir:4,mood:12,stress:-10}],['하숙집 사람들이랑 바다 다녀왔어요! 완전 탔어요.','winksmile',{mood:12,hp:-6,stress:-10}]),
+    '2004-10-05':mg(60,['갑자기 비 와서 선배랑 우산 하나 같이 썼어요. 선배 어깨가 다 젖었던데요...','shy',{mir:4,mood:6}],null),
+    '2004-08-30':ev_('2학기 개강... 방학 왜 이렇게 짧아요.','frown',{mood:-6,stress:5}),
+    '2004-09-28':ev_('추석이라 집에 다녀왔어요. 엄마가 머리 또 해줬어요!','happy',{mood:8,hp:10},30000),
+    '2004-10-22':exam(55,'','2학기 중간고사 통과! 칸트 아저씨랑 화해했어요.','중간고사... 저 철학이랑 안 맞나 봐요.'),
+    '2004-08-14':show(50,'홍대 앞에서 버스킹 했어요! 지나가던 사람들이 박수 쳐줬어요!','버스킹 하다가 비둘기가 날아와서 도망쳤어요... 공연 망했어요.'),
+    '2004-12-25':ev_('오늘 선배 생일이에요! 체리 츄파춥스 한 박스 줬는데 아껴 먹겠대요. 헐, 선배가 웃었어요.','shy',{mir:5,mood:6}),
+    '2005-02-05':show(70,'클럽 공연에서 앵콜 받았어요! 헐, 저 진짜 기타리스트 같았죠?','클럽 공연에서 줄 끊어지고 멘붕 왔어요...'),
+    '2004-11-12':show(65,'가을 공연에서 솔로 했어요! 박수 소리 아직도 들려요.','솔로 하다가 손가락이 꼬였어요... 창피해.'),
+    '2004-12-17':exam(60,'','기말 끝! 이번 학기 진짜 열심히 했죠?','기말 망했어요. 겨울방학엔 아무 생각 안 할래요.'),
+    '2004-12-20':ev_('종강! 겨울방학이에요. 하숙집 이불 밖은 위험해요.','happy',{mood:10,stress:-10}),
+    '2004-12-24':ev_('크리스마스 이브라고 하숙집에서 파티해요! 케이크 위 체리는 제가 올렸어요.','winksmile',{mood:12,love:2}),
+    '2005-01-01':ev_('새해 복 많이 받아요! 올해는 칸트 좀 알게 해주세요...','smile',{mood:6}),
+    '2005-02-14':function(){if(S.mir>=60&&!S.couple)return {t:'선배한테 줄 초콜릿 만들었어요. ...이번엔 친구용 아니라고 말해볼까요?',f:'shy',cho:CONF};return {t:S.couple?'선배한테 초콜릿 줬어요. 이번엔 진짜 진심용이에요!':'선배한테 초콜릿 줬어요. 친구용이라고 했어요. 진짜 친구용이에요!',f:'shy',fx:{mir:3,mood:4}}}
+  };
+  var DH={'10-05':'비 오는 날','08-14':'여름 버스킹','12-25':'선배 생일','02-05':'겨울 클럽 공연','03-26':'밴드부 MT','04-20':'중간고사','05-05':'어린이날','05-20':'대학 축제','05-28':'정기공연','06-18':'기말고사','06-21':'종강','07-06':'내 생일','08-05':'바다 여행','08-30':'2학기 개강','09-28':'추석','10-22':'2학기 중간고사','11-12':'가을 공연','12-17':'2학기 기말고사','12-20':'겨울방학','12-24':'크리스마스 이브','01-01':'새해','02-14':'발렌타인데이'};
+  function diary(h,t){if(!S.diary)S.diary=[];S.diary.push({d:S.d,h:h,t:t});saveS()}
+  function md(){return S.d.slice(5)}
+  function term(){var m=md();if(m>='03-01'&&m<='06-20')return '1학기';if(m>='06-21'&&m<='08-29')return '여름방학';if(m>='08-30'&&m<='12-19')return '2학기';return '겨울방학'}
+  function isWeekend(){var w=dObj().getDay();return w===0||w===6}
+  function classDay(){var t=term();return (t==='1학기'||t==='2학기')&&!isWeekend()}
+  function canDo(a){if(S.end)return ['1년 끝났어요! 새로 시작하려면 타이틀로 가줘요.','smile'];
+    if((a.id==='class'||a.id==='skip')&&!classDay())return [S.d.slice(5)==='03-01'?'오늘 삼일절이에요! 수업 없어요.':isWeekend()?'오늘 주말이에요! 수업 없어요.':'방학이에요! 수업 없어요.','winksmile'];
+    if(a.money&&S.money<-a.money)return ['돈이 없어요... 이번 주는 라면만 먹어야 돼요.','frown'];
+    if(a.id!=='rest'&&S.hp<=12)return ['오늘은 진짜 못 움직여요... 쉬게 해줘요.','frown'];
+    if((a.id==='class'||a.id==='work')&&S.stress>=80)return ['오늘은 절대 안 가요. 머리 터질 것 같아요.','frown'];
+    return null}
+  var ESC={
+    '번아웃 휴학생':[['...1년 동안 진짜 쉬지 않고 달렸잖아요.','shy'],['요즘은 기타 줄만 봐도 머리가 하얘져요. 그래서 한 학기 쉬기로 했어요.','frown'],['그래도 김말이는 안 놓을 거예요. 쉬면서 천천히 칠래요.','smile'],['기다려 줄 거죠? 돌아오면 제일 먼저 연락할게요.','shy']],
+    '미솔미레':[['헐, 1년이 벌써 끝났어요.','happy'],['선배한테 고백한 거 아직도 안 믿겨요. "알아"가 대체 무슨 대답이에요?','shy'],['근데 요즘은 선배가 먼저 옥상에 와 있어요. 흰 우유 두 개 들고요.','happy'],['다 옆에서 같이 있어 줘서 그런 거예요. 고마워요, 진짜로요.','winksmile']],
+    '인디밴드 기타리스트':[['홍대 클럽 사장님이 저 보러 또 왔어요.','happy'],['정식으로 공연 잡아준대요! 김말이 데뷔예요!','happy'],['악보는 아직도 못 읽지만 귀는 1년 동안 엄청 좋아졌거든요.','winksmile'],['첫 공연 날 맨 앞줄 비워 둘게요.','smile']],
+    '철학과 과탑':[['성적표 나왔는데요... 헐, 과탑이래요.','happy'],['칸트 아저씨랑 1년 내내 싸웠는데 이제 좀 친해진 것 같아요.','winksmile'],['교수님이 대학원 생각 있냐고 물어봤어요. 저요? 철학자요?','shy'],['일단 장학금으로 기타 줄부터 새로 살래요!','happy']],
+    '알바의 여왕':[['파르페 가게 사장님이 정직원 하래요.','happy'],['1년 동안 파르페를 몇 개 만들었는지 몰라요. 이제 눈 감고도 체리 올려요.','winksmile'],['학교 다니면서 할 수 있을지 고민 중이에요.','shy'],['가게 오면 체리 하나 더 올려 줄게요. 비밀이에요.','smile']],
+    '평생 베프':[['1년 동안 제일 많이 놀아 준 사람이에요.','happy'],['오락실, 노래방, 뽑기방... 다 같이 갔잖아요.','winksmile'],['2학년 돼도 이렇게 놀아 줘야 돼요. 약속이에요.','smile']],
+    '평범하게 즐거운 새내기':[['벌써 1년이 끝났어요.','smile'],['별일 없었던 것 같은데 생각해 보면 다 재밌었어요.','happy'],['2학년 때도 잘 부탁해요!','winksmile']]
+  };
+  var ENDS=[
+    [function(){return S.stress>=80||S.hp<=10},'번아웃 휴학생','너무 달렸나 봐요... 한 학기 쉬면서 기타만 칠래요.','shy'],
+    [function(){return !!S.couple},'미솔미레','선배랑 사귀게 됐어요! 2학년 때는 옥상에서 같이 기타 쳐요. F코드는 이제 완벽해요.','shy'],
+    [function(){return S.gtr>=85&&S.mood>=60},'인디밴드 기타리스트','홍대 클럽에서 공연 제의 받았어요! 김말이 데뷔합니다!','happy'],
+    [function(){return S.gpa>=80},'철학과 과탑','헐, 저 과탑이래요. 칸트 아저씨 이제 친구예요.','winksmile'],
+    [function(){return S.money>=400000},'알바의 여왕','파르페 가게 사장님이 정직원 하래요. 고민 중이에요.','happy'],
+    [function(){return S.love>=80},'평생 베프','1년 동안 제일 많이 놀아준 사람이에요. 앞으로도 쭉이에요!','happy'],
+    [function(){return true},'평범하게 즐거운 새내기','별일 없었는데 다 재밌었어요. 2학년도 잘 부탁해요!','smile']];
+  function ending(){var e=ENDS.filter(function(x){return x[0]()})[0];S.end=e[1];diary('엔딩 · '+e[1],e[2]);saveS();$('stage').classList.add('busy');playScr(ESC[e[1]],function(){$('stage').classList.remove('busy');endCard(e)})}
+  function endCard(e){
+    $('endT').textContent=e[1];$('endS').textContent='기타 '+S.gtr+' · 학점 '+S.gpa+' · 체력 '+S.hp+' · 기분 '+S.mood+' · 스트레스 '+S.stress+' · 호감도 '+S.love+' · 연애 '+(S.mir||0)+' · '+won(S.money);
+    openW('ending');setTimeout(function(){say(e[2]);face(e[3])},300);SFX.win&&SFX.win();$('endL').textContent='';
+    if(SAMPLE){var hs=(S.diary||[]).slice(-15).map(function(x){return x.d+' '+x.h+': '+x.t}).join('\n');aiText(MISO+'\n미소와 선배 관계: '+mirDesc()+'\n엔딩: '+e[1]+' ('+e[2]+')\n최종 스탯: '+$('endS').textContent+'\n\n[1년 동안의 일기]\n'+hs+'\n\n1년을 함께해 준 플레이어(정체는 정하지 말 것)에게 미소가 쓰는 짧은 편지. 존댓말, 일기 속 일 두세 개 언급, 엔딩에 맞는 톤, 5문장 이내 250자 이내. 첫 줄은 받는 사람 호칭 없이 바로 본문.').then(function(t){$('endL').textContent=t}).catch(function(){})}}
+  function renderActs(){var w=$('acts');w.innerHTML='';var nm={gtr:'기타',gpa:'학점',hp:'체력',mood:'기분',stress:'스트레스',love:'호감도',mir:'연애'};
+    ACTS.forEach(function(a){var b=document.createElement('button');b.className='act'+(canDo(a)?' no':'');b.appendChild(spEl(a.ic,30));
+      var m=document.createElement('div');m.innerHTML='<b>'+a.name+'</b><small></small>';var sm=m.querySelector('small');
+      for(var k in a.fx){var v=a.fx[k],good=k==='stress'?v<0:v>0;var i=document.createElement('i');if(good)i.className='p';i.textContent=nm[k]+(v>0?'+':'−');sm.appendChild(i)}
+      if(a.game){var i=document.createElement('i');i.className='p';i.textContent='용돈+';sm.appendChild(i)}
+      b.appendChild(m);var c=document.createElement('span');c.className='c';c.textContent=a.money?won(-a.money):a.game?'미니게임':'';b.appendChild(c);
+      b.onclick=function(){doAct(a)};w.appendChild(b)});
+    $('sHint').textContent=S.d.replace(/-/g,'.')+' ('+WK[dObj().getDay()]+') 일과'}
+  var workPending=false,workDone=false;
+  function nextDay(act){if(classDay()&&act!=='class')S.gpa=cl(S.gpa-2);var d=dObj();d.setDate(d.getDate()+1);S.d=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');S.lt=0;
+    S.hp=cl(S.hp+2);S.mood=cl(S.mood+(60-S.mood)*.2+(Math.random()*6-3));if(S.stress>=70)S.mood=cl(S.mood-4)}
+  function finish(a,line,face_,extraMoney){var fx=apply(a.fx);if(extraMoney)S.money+=extraMoney;if(a.money)S.money=Math.max(0,S.money+a.money);
+    S.last=a.name;nextDay(a.id);var ev=null;
+    if(SPECIAL[S.d]&&!S.ev[S.d]){S.ev[S.d]=1;ev=SPECIAL[S.d]()}else{var r=Math.random(),acc=0;for(var i=0;i<EVT.length;i++){acc+=EVT[i].p;if(r<acc){ev=EVT[i].cls&&!classDay()?null:EVT[i];break}}}
+    saveS();renderS(fx);floatFx(fx,(extraMoney||0)+(a.money||0));renderActs();say(line);face(face_);SFX.coin();
+    if(S.d>='2005-03-01'){setTimeout(ending,ev?6400:3200)}
+    if(ev){setTimeout(function(){var f2=apply(ev.fx||{});if(ev.money)S.money+=ev.money;saveS();renderS(f2);floatFx(f2,ev.money||0);say(ev.t);face(ev.f);SFX.pop(3)},3200)}}
+  function doAct(a){var no=canDo(a);if(no){say(no[0]);face(no[1]);SFX.wrong&&SFX.wrong();return}
+    openW(null);
+    if(a.game){workPending=true;openGame();say('알바 다녀올게요! 파르페 망치면 안 되는데...');face('winksmile');return}
+    var l=a.L[Math.floor(Math.random()*a.L.length)];finish(a,l[0],l[1])}
+  addEventListener('message',function(e){var m=e.data;if(!m||m.t!=='cb-game-result'||!workPending)return;workPending=false;var a=ACTS[2];
+    var pay=Math.round(m.money/100)*10+(m.great?5000:0);workDone=true;
+    var line=m.great?'대성공! 사장님이 보너스까지 줬어요!':m.win?'알바비 받았어요! 오늘 장사 완전 잘됐어요.':'허걱, 오늘 알바 완전 망했어요... 그래도 알바비는 받았어요.';
+    var aa={id:'work',name:a.name,fx:Object.assign({},a.fx,{mood:(m.great?12:m.win?6:-6)})};finish(aa,line,m.win?'happy':'frown',pay)});
+  
+  function slotGet(i){try{return JSON.parse(localStorage.getItem('cb-slot'+i))}catch(e){return null}}
+  function arm(b,fn,label){if(b.classList.contains('warn')){fn();return}document.querySelectorAll('.sl button.warn').forEach(function(x){x.classList.remove('warn');x.textContent=x.dataset.l});
+    b.classList.add('warn');b.textContent=label;setTimeout(function(){if(b.classList.contains('warn')){b.classList.remove('warn');b.textContent=b.dataset.l}},3000)}
+  function renderSlots(){var w=$('slots');w.innerHTML='';
+    for(var i=1;i<=3;i++)(function(i){var s=slotGet(i),r=document.createElement('div');r.className='sl';
+      r.innerHTML='<span class="n">SLOT '+i+'</span><span class="i"></span><button data-l="저장">저장</button><button data-l="불러오기">불러오기</button>';
+      var inf=r.querySelector('.i');if(s){inf.innerHTML=s.d.replace(/-/g,'.')+' · '+won(s.money)+'<small></small>';inf.querySelector('small').textContent='기타 '+s.gtr+' · 학점 '+s.gpa+' · 호감도 '+s.love+(s.at?' · 저장 '+s.at:'')}
+      else{inf.innerHTML='빈 슬롯<small>-</small>'}
+      var bs=r.querySelectorAll('button');if(!s)bs[1].disabled=true;
+      bs[0].onclick=function(){var go_=function(){var c=JSON.parse(JSON.stringify(S));var n=new Date();c.at=(n.getMonth()+1)+'/'+n.getDate()+' '+n.getHours()+':'+String(n.getMinutes()).padStart(2,'0');try{localStorage.setItem('cb-slot'+i,JSON.stringify(c))}catch(e){}renderSlots();SFX.coin();say('저장 완료! 이 날은 기억해 둘게요.');face('wink')};if(s)arm(bs[0],go_,'덮어쓰기?');else go_()};
+      bs[1].onclick=function(){arm(bs[1],function(){S=JSON.parse(JSON.stringify(slotGet(i)));delete S.at;saveS();renderS();renderActs();renderSlots();SFX.door();say('헐, 그날로 돌아왔어요! '+S.d.replace(/-/g,'.')+'이에요.');face('happy')},'정말?')};
+      w.appendChild(r)})(i);
+    var r=document.createElement('div');r.className='sl new';r.innerHTML='<span class="n">NEW</span><span class="i">처음부터 다시<small>2004.03.01로 돌아가요. 저장 안 한 진행은 사라져요.</small></span><span></span><button data-l="새로 시작">새로 시작</button>';
+    var b=r.querySelector('button');b.onclick=function(){arm(b,function(){S=JSON.parse(JSON.stringify(S0));saveS();renderS();renderActs();renderSlots();say('다시 입학식 날이에요! 이번엔 강의실 안 헤매야지.');face('winksmile')},'정말?')};w.appendChild(r)}
+  renderS();renderActs();
+
+
+  ACTS[2]=Object.assign({},ACTS[2],{game:0,pay:1,L:[['알바 끝! 오늘 파르페 엄청 팔았어요.','happy',1],['손님이 체리 하나 더 달래서 몰래 줬어요. 비밀이에요.','winksmile',0],['블렌더 넘쳐서 혼났어요... 그래도 알바비는 받았어요.','shy',-1]]});
+  var plan=[],selD=0;
+  function dateAt(i){var d=dObj();d.setDate(d.getDate()+i);return d}
+  function key(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+  function classOn(d){var m=key(d).slice(5),w=d.getDay();var t=(m>='03-01'&&m<='06-20')||(m>='08-30'&&m<='12-19');return t&&w!==0&&w!==6&&m!=='03-01'}
+  function weekLen(){var n=0;for(var i=0;i<7;i++){if(key(dateAt(i))>'2005-02-28')break;n++}return n}
+  renderActs=function(){var n=weekLen();plan.length=Math.min(plan.length,n);
+    var D=$('days');D.innerHTML='';for(var i=0;i<7;i++)(function(i){var d=dateAt(i),c=document.createElement('button');var off=i>=n;
+      c.className='dy'+(i===selD?' sel':'')+(d.getDay()===0||d.getDay()===6?' we':'')+(plan[i]?'':' empty');if(off){c.style.visibility='hidden'}
+      c.innerHTML='<span class="w">'+WK[d.getDay()]+'</span><span class="n">'+(d.getMonth()+1)+'/'+d.getDate()+'</span>';
+      if(plan[i]){c.appendChild(spEl(plan[i].ic,22));var s=document.createElement('span');s.className='a';s.textContent=plan[i].name.split(' ')[0];c.appendChild(s)}else{var s=document.createElement('span');s.className='a';s.textContent='-';c.appendChild(s)}
+      c.onclick=function(){selD=i;renderActs()};D.appendChild(c)})(i);
+    var w=$('acts');w.innerHTML='';var nm={gtr:'기타',gpa:'학점',hp:'체력',mood:'기분',stress:'스트레스',love:'호감도',mir:'연애'};var sd=dateAt(selD);
+    ACTS.forEach(function(a){var b=document.createElement('button');var dis=(a.id==='class'||a.id==='skip')&&!classOn(sd);b.className='act'+(dis?' no':'');b.appendChild(spEl(a.ic,30));
+      var m=document.createElement('div');m.innerHTML='<b>'+a.name+'</b><small></small>';var sm=m.querySelector('small');
+      for(var k in a.fx){var v=a.fx[k],good=k==='stress'?v<0:v>0;var i=document.createElement('i');if(good)i.className='p';i.textContent=nm[k]+(v>0?'+':'−');sm.appendChild(i)}
+      if(a.pay){var i=document.createElement('i');i.className='p';i.textContent='용돈+';sm.appendChild(i)}
+      b.appendChild(m);var c=document.createElement('span');c.className='c';c.textContent=a.money?won(-a.money):'';b.appendChild(c);
+      b.onclick=function(){if(dis){say(key(sd).slice(5)==='03-01'?'그날은 삼일절이에요! 수업 없어요.':((sd.getDay()===0||sd.getDay()===6)?'그날은 주말이에요! 수업 없어요.':'그날은 방학이에요! 수업 없어요.'));face('winksmile');return}
+        plan[selD]=a;var n2=weekLen();for(var j=1;j<=n2;j++){var t=(selD+j)%n2;if(!plan[t]){selD=t;break}}renderActs()};w.appendChild(b)});
+    var full=true;for(var i=0;i<n;i++)if(!plan[i])full=false;$('runB').disabled=!full||!!S.end;
+    $('sHint').textContent=S.end?'1년이 끝났어요':(S.d.replace(/-/g,'.')+'부터 '+n+'일')};
+  $('clrB').onclick=function(){plan=[];selD=0;renderActs()};
+  function runDay(a){var line,fc,pay=0;var no=canDo(a);
+    var res=0,P=Math.random(),pb=.2+(S.hp<30?.15:0)+(S.stress>60?.15:0),pg=.18+(S.mood>70?.08:0);if(P<pb)res=-1;else if(P<pb+pg)res=1;
+    if(no&&a.id!=='rest'){line=no[0]+' 그냥 쉴래요.';fc=no[1];a=ACTS[4];res=0}else{var LL=a.L.filter(function(x){return (x[2]||0)===res});if(!LL.length){LL=a.L;res=0}var l=LL[Math.floor(Math.random()*LL.length)];line=l[0];fc=l[1]}
+    var gm=res>0?1.4:res<0?.4:1,bm=res>0?.7:res<0?1.4:1,FX={};for(var k in a.fx){var v=a.fx[k],good=k==='stress'?v<0:v>0,m=(good?gm:bm)*(.8+Math.random()*.4),nv=Math.round(v*m);if(!nv)nv=v>0?1:-1;FX[k]=nv}
+    ['gtr','gpa'].forEach(function(k){if(FX[k]>0)FX[k]=Math.max(1,Math.round(FX[k]*Math.max(.2,1-S[k]/110)))});
+    if(a.id==='band'&&FX.gtr>0)FX.gtr+=gearB();
+    if(a.pay){pay=Math.round((6000+Math.random()*4000)/1000)*1000}
+    var fx=apply(FX);kgAdd({class:0,band:-.3,work:.25,play:-.2,rest:.3,skip:.1}[a.id]||0);if(a.money)S.money=Math.max(0,S.money+a.money);S.money+=pay;S.last=a.name;nextDay(a.id);
+    var ev=null,rd=rentDue();if(SPECIAL[S.d]&&!S.ev[S.d]){S.ev[S.d]=1;ev=SPECIAL[S.d]();if(ev&&!ev.cho&&!ev.rhythm)diary(DH[S.d.slice(5)]||'이벤트',ev.t);if(rd){var rr=payRent();if(S.wl)S.wl.push(rr.t)}}else if(rd){ev=payRent()}else if(dateDue()!=null){var di=dateDue();S.dt[DATES[di].h]=1;ev={date:di}}else if(!S.wish&&!S.end&&Math.random()<.07){ev=makeWish()}
+    if(S.wish&&S.d>S.wish.until){if(S.wl)S.wl.push('갖고 싶던 '+S.wish.n+'은 결국 못 샀다.');S.wish=null}else{var r=Math.random(),acc=0;for(var i=0;i<EVT.length;i++){acc+=EVT[i].p;if(r<acc){ev=EVT[i].cls&&!classDay()?null:EVT[i];break}}}
+    var got=[],I=INV(),R=Math.random();if(a.id==='work'&&res>=0&&R<.6)got.push('lolli');if(a.id==='play'&&R<.5)got.push('gum');if(a.id==='rest'&&res>0)got.push('book');if(a.id==='band'&&res>0)got.push('cd');got.forEach(function(k){I[k]=(I[k]||0)+1});if(got.length&&$('cmdw').classList.contains('iv'))buildInv();
+    saveS();renderS(fx);floatFx(fx,pay+(a.money||0),got.map(function(k){return INM[k]}));if(S.wl)S.wl.push(md()+' '+a.name+(res>0?'(대성공)':res<0?'(실패)':'')+': '+line);say(line);face(fc);SFX.coin();return ev}
+  $('runB').onclick=function(){var P=plan.slice(),i=0,chDone=false;S.lp=P.map(function(a){return a.id});plan=[];selD=0;openW(null);$('stage').classList.add('busy');
+    S.wl=[];(function step(){if(i>=P.length||S.end){$('stage').classList.remove('busy');if(!S.end){say('일주일 끝! 다음 주 스케줄도 짜줘요.');face('smile');weekDiary()}return}
+      var ev=runDay(P[i]);i++;
+      function after(d){if(S.d>='2005-03-01')wait(function(){$('stage').classList.remove('busy');ending()},d);else wait(step,d)}
+      if(ev&&ev.date!=null){var D=DATES[ev.date],dk2=S.d;wait(function(){playScr(D.L,function(){var f2=apply(D.fx);if(!S.diary)S.diary=[];S.diary.push({d:dk2,h:'선배랑 · '+D.h,t:D.L.map(function(l){return (l[2]?'선배: ':'')+l[0]}).join(' ')});if(S.wl)S.wl.push('선배랑 '+D.h+' 데이트');saveS();renderS(f2);floatFx(f2,0);face('happy');after(1800)})},1500)}
+      else if(ev&&ev.rhythm){var nm=DH[md()]||'공연',dk=S.d;say(nm+' 날이에요! 떨려요...');face('shy');wait(function(){live(ev.rhythm,nm,function(ok){var R=ev.rhythm,x=ok?{t:R.good,f:'happy',fx:{mood:15,stress:-15,love:2,gtr:2}}:{t:R.bad,f:'frown',fx:{mood:-10,stress:8}};var f2=apply(x.fx);if(!S.diary)S.diary=[];S.diary.push({d:dk,h:nm,t:x.t});if(S.wl)S.wl.push(nm+': '+x.t);saveS();renderS(f2);floatFx(f2,0);say(x.t);face(x.f);after(2500)})},1800)}
+      else if(ev&&ev.cho){wait(function(){var c=Object.assign({},ev.cho,{q:ev.t,f:ev.f});showCho(c,function(){after(2500)})},1500)}
+      else if(ev){if(S.wl)S.wl.push(ev.t);wait(function(){var f2=apply(ev.fx||{});if(ev.money)S.money+=ev.money;saveS();renderS(f2);floatFx(f2,ev.money||0);say(ev.t);face(ev.f);SFX.pop(3);after(2500)},1500)}
+      else if(!chDone&&Math.random()<.3){chDone=true;wait(function(){getCho(function(c){showCho(c,function(){after(2500)})})},1500)}else after(1500)})()};
+
+  var CHO=[
+    {q:'실음과 범이가 오늘 밤 클럽 공연 같이 보러 가재요. 갈까요?',f:'happy',a:[['같이 가','범이 드럼 미쳤어요! 저도 자극받았어요.','happy',{mood:10,stress:-8,hp:-8,gtr:2}],['공부해','...네. 칸트 아저씨랑 놀게요.','frown',{gpa:3,mood:-4}]]},
+    {q:'찬희 선배가 축구 보러 가재요. 근데 또 제 이름 채미수라고 불렀어요.',f:'frown',a:[['따라가','골 들어갈 때 같이 소리 질렀어요! 이름은 끝까지 틀렸어요.','happy',{mood:6,hp:-5,stress:-4}],['이름부터 고쳐줘','채미소라고 다섯 번 말했는데 채미주가 됐어요...','shy',{stress:3}]]},
+    {q:'선배가 오늘 F코드 봐준대요. 근데 밴드 합주 시간이랑 겹쳐요. 어떡해요?',f:'shy',a:[['선배한테 가','선배가 손가락 잡아줬... 아니 그냥 코드요! 코드 잡아줬다고요!','shy',{gtr:3,mir:3},0,null,[['선배, 저 왔어요!','happy'],['합주는.','','서미르'],['선배가 더 중요하죠! ...아니 F코드가요!','shy'],['그래. F코드가.','','서미르']]],['합주 가','합주 끝나고 보니까 선배가 문자 보냈어요. "ㅇ" 한 글자요.','frown',{gtr:4,mood:-2}]]},
+    {cls:1,q:'학교 가는 길에 비둘기 떼가 길을 막고 있어요. 어떡해요?',f:'frown',a:[['돌아가','돌아가다 길 잃어서 지각했어요...','shy',{hp:-4,gpa:-2}],['뚫고 가','눈 감고 뛰었어요. 다신 안 해요.','frown',{stress:8,gpa:1}]]},
+    {q:'밴드부 회식 2차로 노래방 간대요. 트로트 불러도 돼요?',f:'winksmile',a:[['불러','사랑의 배터리 불렀더니 다들 쓰러졌어요!','happy',{mood:10,stress:-6}],['발라드 불러','발라드 부르다가 음 이탈했어요...','shy',{mood:-2,stress:3}]]},
+    {q:'파르페 가게 사장님이 주말 대타 부탁하셨어요.',f:'smile',a:[['해','대타 끝! 알바비 두둑해요.','smile',{hp:-10,stress:4},20000],['쉬어','푹 쉬었어요. 사장님 미안해요.','winksmile',{hp:6,mood:2}]]},
+    {cls:1,q:'내일 퀴즈인데 밤새서 공부할까요?',f:'frown',a:[['밤새','해 뜨는 거 봤어요... 그래도 다 외웠어요.','shy',{gpa:5,hp:-12,stress:6}],['자','푹 잤어요! 퀴즈는... 감으로 찍었어요.','winksmile',{hp:6,gpa:-1}]]},
+    {cls:1,q:'선배가 비디오 가게에서 아무도 안 빌린 테이프 빌려 왔대요. 같이 보자는데 내일 1교시예요.',f:'winksmile',a:[['같이 봐','진짜 망한 영화였어요. 근데 선배가 웃어서 저도 웃었어요.','shy',{mir:3,mood:6,hp:-6}],['자야지','일찍 잤어요. 1교시는 안 졸았어요!','smile',{hp:6,gpa:1}]]},
+    {q:'편의점 가는데 선배 흰 우유도 사다 줄까요?',f:'smile',a:[['사다 줘','선배는 꼭 유리컵에 따라 마셔요. 팩째로는 절대 안 마시더라고요.','happy',{mir:2},-1000,null,[['선배, 흰 우유요! 빨대 꽂아 줄까요?','happy'],['컵에 따라.','','서미르'],['알아요, 알아. 유리컵 씻어 놨어요.','winksmile'],['기특하네.','','서미르']]],['됐어','...그럼 제가 마실게요.','winksmile',{mood:-1}]]},
+    {q:'선배가 옥상에 있는 것 같은데, 저도 올라가 볼까요?',f:'shy',a:[['가 봐','선배 옆에서 츄파춥스 먹었어요. 아무 말도 안 했는데 좋았어요.','shy',{mir:3,stress:-4},0,null,[['선배, 뭐 해요?','smile'],['아무것도.','','서미르'],['그럼 저도 아무것도 할게요.','winksmile'],['옆에서 시끄럽게는 하지 마.','','서미르'],['츄파춥스 먹는 소리는 괜찮죠?','happy'],['그 정도는 봐준다.','','서미르']]],['방에 있어','방에서 기타 쳤어요. 옥상 쪽만 계속 쳐다봤지만요.','frown',{gtr:2}]]},
+    {q:'선배가 입모양 퀴즈 하재요. 저 맨날 지는데...',f:'winksmile',a:[['해','이번엔 맞혔어요! 선배가 처음으로 졌어요!','happy',{mir:3,mood:6},0,null,[['선배, 이거 뭐게요? 입모양 잘 봐요.','winksmile'],['배고파.','','서미르'],['헐, 어떻게 알았어요?','happy'],['넌 맨날 그거잖아.','','서미르']]],['과제부터','과제 했어요. 퀴즈는 다음에 이길 거예요.','smile',{gpa:2}]]},
+    {q:'엄마가 주말에 미용실 일 좀 도와달래요.',f:'smile',a:[['도와드려','머리 감기기 백 명은 한 것 같아요. 용돈은 받았어요!','smile',{hp:-6,mood:-2},15000],['과제 핑계','엄마한테 과제 있다고 했어요. 쉿, 비밀이에요.','winksmile',{stress:-4,mood:2}]]}
+  ];
+
+  function mirDesc(){if(S.couple)return '서미르 선배와 이제 사귀는 사이(2005년 2월 14일 미소가 고백, 선배가 받아줌). 프로필의 "아직 사귀는 사이는 아님"보다 이걸 우선한다.';var m=S.mir==null?20:S.mir;return m<40?'선배를 좋아하지만 티 안 내려고 함(선배 게이지 '+m+'/100)':m<60?'선배와 썸이 조금씩 진해지는 중(선배 게이지 '+m+'/100)':'선배를 많이 좋아하고 선배도 미소를 신경 쓰는 눈치(선배 게이지 '+m+'/100)'}
+  var MISO='너는 2004년 한국 성운대 철학과 04학번 신입생 채미소(21세)다. 밴드부 기타리스트(기타 이름 김말이), 하숙집 천사하우스 2층 끝방에 산다. 활발하고 엉뚱하며 직설적. 비둘기를 무서워하고 길치. 체리 츄파춥스, 귀여니 인소, 체리필터를 좋아한다. 같은 하숙집 서미르 선배(호텔경영학과 복학생, 24세, 크리스마스 생일, 나른하고 짧은 반말, 별명 미친개, 흰 우유를 유리컵에 마시고 풍선껌·B급 영화를 좋아함, 바이크 면허만 있음)를 좋아한다. 2004년 시대에 맞게(싸이월드, 버디버디, 폴더폰). 이모티콘·외계어 금지.';
+  function aiText(p){return SAMPLE([{role:'user',content:p}],{cache:false,modelTier:'default'}).then(function(r){return (r&&r.text||'').trim()})}
+  function weekDiary(){if(!SAMPLE||!S.wl||!S.wl.length)return;var log=S.wl.slice(-14).join('\n'),d=S.d;S.wl=[];
+    aiText(MISO+'\n미소와 선배 관계: '+mirDesc()+'\n\n[이번 주 기록]\n'+log+'\n\n미소가 직접 쓰는 이번 주 일기를 써라. 반말 일기체, 3~4문장, 160자 이내. 기록에 없는 큰 사건은 지어내지 말 것. 형식: 첫 줄은 제목(12자 이내, 따옴표 없이), 둘째 줄부터 본문.').then(function(t){var L=t.split('\n').filter(function(x){return x.trim()});if(L.length<2)return;if(!S.diary)S.diary=[];S.diary.push({d:d,h:L[0].replace(/^[#\s\"'제목:]+/,'').slice(0,20),t:L.slice(1).join(' ').trim()});saveS()}).catch(function(){})}
+  function genCho(){var dd=dObj();return aiText(MISO+'\n미소와 선배 관계: '+mirDesc()+'\n[지금] '+S.d+'('+WK[dd.getDay()]+', '+term()+(/방학/.test(term())?', 방학이라 수업·과제·시험·등교 없음':isWeekend()?', 주말이라 수업 없음':'')+'). 기타 '+S.gtr+', 학점 '+S.gpa+', 체력 '+S.hp+', 기분 '+S.mood+', 스트레스 '+S.stress+'\n\n미소가 플레이어(미소를 챙겨주는 사람, 정체는 정하지 말 것)에게 고민을 털어놓고 두 가지 중 골라 달라고 하는 짧은 이벤트를 하나 만들어라. 2004년 대학 생활(수업, 밴드부, 하숙집, 알바, 서미르 선배 등)에서 일어날 법한 일. 반드시 JSON 하나만 출력:\n{\"q\":\"미소의 질문(70자 이내, 존댓말)\",\"f\":\"표정\",\"a\":[{\"l\":\"선택지(8자 이내)\",\"r\":\"고른 뒤 미소의 대사(70자 이내)\",\"f\":\"표정\",\"fx\":{\"스탯\":숫자}},{두 번째도 같은 형식}]}\n표정은 smile, happy, winksmile, frown, shy 중 하나. fx 스탯은 gtr, gpa, hp, mood, stress, mir 중에서 1~3개, 값은 -6~6. mir는 서미르 선배 게이지(선배가 나올 때만).').then(function(t){var j=JSON.parse(t.slice(t.indexOf('{'),t.lastIndexOf('}')+1));var F=['smile','happy','winksmile','frown','shy'],K=['gtr','gpa','hp','mood','stress','mir'];function ff(x){return F.indexOf(x)>-1?x:'smile'}
+      if(!j.q||!j.a||j.a.length<2)throw 0;return {q:String(j.q),f:ff(j.f),a:j.a.slice(0,2).map(function(o){var fx={};for(var k in (o.fx||{}))if(K.indexOf(k)>-1)fx[k]=Math.max(-6,Math.min(6,Math.round(+o.fx[k]||0)));return [String(o.l||'응').slice(0,10),String(o.r||'네!'),ff(o.f),fx]})}})}
+  function aiConfess(done){if(!SAMPLE){done(null);return}var hs=(S.diary||[]).slice(-12).map(function(x){return x.d+' '+x.h+': '+x.t}).join('\n');
+    aiText(MISO+'\n\n[미소의 지난 일기]\n'+hs+'\n\n오늘(2005년 2월 14일) 미소가 서미르 선배에게 초콜릿을 주며 친구용이 아니라고 고백했고, 선배는 덤덤하고 짧게 반응했지만 결국 받아줬다. 방금 있었던 일을 미소가 플레이어에게 들려주는 대사를 써라. 일기 속 추억을 하나 자연스럽게 언급. 존댓말, 2~3문장, 120자 이내, 대사만.').then(function(t){done(t.replace(/^[\"']|[\"']$/g,''))}).catch(function(){done(null)})}
+  var CONF={a:[['말해!','말했어요... 선배가 \"알아\" 이러는데요? 헐, 그게 무슨 뜻이에요? ...사귀재요!','happy',{mir:5,mood:10},0,function(done){S.couple=true;aiConfess(function(t){diary('발렌타인데이',t||'선배한테 고백했다. "알아"래. 그게 무슨 뜻이냐고 물었더니 사귀재. 헐.');done(t)})}],['아직은','...친구용이라고 줬어요. 바보 채미소.','shy',{mir:-3,mood:-4}]]};
+  function getCho(cb){var c=pickCho();if(c){cb(c);return}if(!SAMPLE){S.cho=[];cb(pickCho());return}say('음... 잠깐만요.');genCho().then(cb).catch(function(){S.cho=[];cb(pickCho())})}
+  function pickCho(){if(!S.cho)S.cho=[];if(S.cho.length>=CHO.length)return null;var L=[];CHO.forEach(function(c,i){if(S.cho.indexOf(i)<0&&(!c.cls||classDay()))L.push(i)});if(!L.length)return null;var i=L[Math.floor(Math.random()*L.length)];S.cho.push(i);return CHO[i]}
+  function showCho(c,cb){if(!c){cb();return}say(c.q);face(c.f);SFX.pop&&SFX.pop(2);var w=document.createElement('div');w.id='cho';w.className='win';w.innerHTML='<div class="bd"></div>';var bd=w.querySelector('.bd');
+    c.a.forEach(function(o){var b=document.createElement('button');b.className='cm';b.textContent=o[0];b.onclick=function(e){e.stopPropagation();w.remove();var f=apply(o[3]||{});if(o[4])S.money=Math.max(0,S.money+o[4]);if(S.wl)S.wl.push(c.q+' → '+o[0]);saveS();renderS(f);floatFx(f,o[4]||0);SFX.blip&&SFX.blip();
+      if(o[6]){playScr(o[6],function(){face(o[2]);cb()});return}if(o[5]){say('...');face(o[2]);o[5](function(t){saveS();renderS();say(t||o[1]);face(o[2]);cb()});return}say(o[1]);face(o[2]);cb()};bd.appendChild(b)});
+    $('stage').appendChild(w)}
+  $('rptB').onclick=function(){if(!S.lp||!S.lp.length){say('아직 지난주가 없어요! 먼저 한 주 짜줘요.');face('winksmile');return}
+    plan=[];var n=weekLen();for(var i=0;i<n;i++){var id=S.lp[i%S.lp.length],a=ACTS.filter(function(x){return x.id===id})[0]||ACTS[4];if((a.id==='class'||a.id==='skip')&&!classOn(dateAt(i)))a=ACTS[4];plan[i]=a}selD=0;renderActs()};
+  var LIVES=[{src:'live_cf.mp3',name:'체리필터',notes:[1.138, 1.892, 2.276, 2.659, 3.46, 3.855, 4.563, 4.934, 5.317, 6.478, 6.85, 7.233, 7.976, 8.359, 8.742, 9.52, 10.658, 11.029, 12.539, 13.305, 14.06, 14.431, 15.197, 16.358, 17.09, 17.845, 18.622, 19.772, 20.132, 20.91, 21.653, 22.43, 22.814, 23.185, 23.557, 23.94, 24.694, 25.066, 25.461, 26.215, 26.587, 27.736, 28.108, 29.234, 29.605, 29.989, 30.755, 31.126, 31.521, 32.276, 32.659, 33.042, 33.797, 34.18, 34.563, 35.306, 35.701, 36.061, 36.827, 37.21, 37.605, 38.359, 38.731, 39.114, 39.497, 39.88, 40.072, 40.635, 41.006, 41.39, 41.581, 41.773, 42.156, 42.347, 42.725, 42.91, 43.102, 43.294, 43.665, 43.862, 44.431, 44.617, 44.803, 45.198],dur:47.08},{src:'live_gf.mp3',name:'Girlfriend',notes:[1.115, 1.474, 1.834, 2.206, 3.669, 4.4, 4.76, 5.132, 5.863, 6.223, 6.594, 7.326, 8.057, 8.789, 9.52, 10.263, 10.983, 11.714, 12.086, 12.446, 13.189, 13.92, 14.64, 15.372, 16.103, 16.834, 17.578, 17.937, 18.297, 19.029, 19.772, 20.503, 21.235, 21.966, 22.698, 23.069, 23.429, 23.789, 24.16, 24.892, 25.623, 25.983, 26.355, 27.04, 27.446, 27.794, 28.177, 28.549, 30.012, 30.383, 30.743, 31.115, 31.475, 31.846, 32.218, 32.938, 33.309, 33.681, 34.04, 34.412, 34.772, 35.143, 35.503, 35.875, 36.235, 36.606, 36.966, 37.326, 38.069, 38.801, 39.903, 40.263, 41.726, 42.458, 42.818, 43.189, 43.897, 44.652, 45.012, 45.383],dur:46.88}],LIVE=LIVES[0],LBUF={},LCTX=null;
+  function lctx(){if(!LCTX){var A=window.AudioContext||window.webkitAudioContext;if(A)LCTX=new A()}return LCTX}
+  function lload(){var c=lctx();if(!c)return Promise.reject();var L=LIVE;if(LBUF[L.src])return Promise.resolve(LBUF[L.src]);return fetch(L.src).then(function(r){return r.arrayBuffer()}).then(function(a){return new Promise(function(res,rej){c.decodeAudioData(a,res,rej)})}).then(function(b){LBUF[L.src]=b;return b})}
+  function live(R,name,cb){S.lv=(S.lv||0)+1;LIVE=LIVES[(S.lv-1)%LIVES.length];var w=document.createElement('div');w.className='win';w.id='live';w.innerHTML='<div class="tbar"><span class="t">LIVE · '+name+'</span></div><div class="bd"><div id="lcombo"></div><div id="lane"><div id="lring"></div><div id="ljudge"></div></div><div id="lbar"></div><button id="lstart">무대 시작 ▶</button><div id="lres"></div></div>';$('stage').appendChild(w);
+    var ld=lload().catch(function(){return null}),pw=50+S.gtr*.5,gw=110+S.gtr,spd=260+(R.min-40)*3,need=.5+(R.min-40)/150,N=LIVE.notes.map(function(t){return {t:t,j:0,el:null}}),t0=0,run=false,combo=0,sc=0,lane=$('lane'),src=null;
+    function finish(){run=false;var ok=sc/N.length>=need;var r=$('lres');r.textContent=ok?'CLEAR!':'FAILED...';r.style.display='block';if(ok){SFX.win&&SFX.win()}else{SFX.wrong&&SFX.wrong()}setTimeout(function(){try{src&&src.stop()}catch(e){}w.remove();SFX.bgmHold(false);cb(ok)},1600)}
+    function re(el,c){el.classList.remove(c);void el.offsetWidth;el.classList.add(c)}
+    function hitFx(p){var b=document.createElement('div');b.className='bst'+(p?' p':'');b.innerHTML='<b></b>';for(var q=0;q<8;q++){var i=document.createElement('i'),a=q/8*Math.PI*2,r=28+Math.random()*16;i.style.setProperty('--dx',Math.cos(a)*r+'px');i.style.setProperty('--dy',Math.sin(a)*r+'px');b.appendChild(i)}lane.appendChild(b);setTimeout(function(){b.remove()},450);re(lane,'fl');setTimeout(function(){lane.classList.remove('fl')},90)}
+    function snd(p){var c=lctx();if(!c)return;var t=c.currentTime,n=c.sampleRate*.08|0,bf=c.createBuffer(1,n,c.sampleRate),d=bf.getChannelData(0);for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,3);var ns=c.createBufferSource();ns.buffer=bf;var hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=2500;var g1=c.createGain();g1.gain.value=.22;ns.connect(hp);hp.connect(g1);g1.connect(c.destination);ns.start(t);
+      var o=c.createOscillator(),g=c.createGain();o.type='triangle';o.frequency.setValueAtTime(p?1760:1320,t);o.frequency.exponentialRampToValueAtTime(p?880:660,t+.08);g.gain.setValueAtTime(.16,t);g.gain.exponentialRampToValueAtTime(.001,t+.12);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.13)}
+    function judge(n,k){n.j=k;if(n.el){n.el.remove();n.el=null}var J=$('ljudge');J.className=k===1?'p':k===2?'':'m';J.textContent=k===1?'PERFECT':k===2?'GOOD':'MISS';re(J,'pop');if(k<3){combo++;sc+=k===1?1:.6;re($('lring'),'hit');hitFx(k===1);snd(k===1);if(navigator.vibrate)try{navigator.vibrate(12)}catch(e){}}else{combo=0;re(w,'shk')}$('lcombo').textContent=combo>1?combo+' COMBO':'';if(combo>1)re($('lcombo'),'pop')}
+    function tap(e){if(!run)return;if(e)e.preventDefault();var now=(lctx().currentTime-t0)*1000,best=null,bd=1e9;N.forEach(function(n){if(n.j)return;var d=Math.abs(n.t*1000-now);if(d<bd){bd=d;best=n}});if(best&&bd<=gw)judge(best,bd<=pw?1:2)}
+    function loop(){if(!run)return;requestAnimationFrame(loop);var now=lctx().currentTime-t0,W=lane.clientWidth,RX=W-70;$('lbar').style.width=Math.min(100,now/LIVE.dur*100)+'%';
+      N.forEach(function(n){if(n.j)return;var x=RX-(n.t-now)*spd;if(now*1000-n.t*1000>gw){judge(n,3);return}if(x>-20){if(!n.el){n.el=document.createElement('i');n.el.className='nt';lane.appendChild(n.el)}n.el.style.left=x+'px'}});
+      if(now>=LIVE.dur)finish()}
+    w.querySelector('.bd').addEventListener('pointerdown',function(e){if(e.target.id==='lstart')return;tap(e)});
+    function kd(e){if(!document.getElementById('live')){removeEventListener('keydown',kd);return}if(e.code==='Space'||e.code==='Enter'||e.key.length===1)tap(e)}addEventListener('keydown',kd);
+    $('lstart').onclick=function(e){e.stopPropagation();var b=this;b.disabled=true;var c=lctx();if(c&&c.state==='suspended')c.resume();SFX.bgmHold(true);
+      ld.then(function(buf){b.remove();if(!buf||!c){w.remove();SFX.bgmHold(false);cb(S.gtr>=R.min);return}src=c.createBufferSource();src.buffer=buf;var g=c.createGain();g.gain.value=SFX.isBgmMuted&&SFX.isBgmMuted()?0:.8;src.connect(g);g.connect(c.destination);t0=c.currentTime+.12;src.start(t0);run=true;loop()})}}
+
+
+  var WISH=[
+    {n:'뽑기방 키링',ic:'phone',p:5000,ask:'헐, 뽑기방에 체리 키링 새로 들어왔대요! 저 그거 진짜 갖고 싶어요...',thx:'체리 키링이다! 기타 가방에 제일 잘 보이는 데 달 거예요!'},
+    {n:'탈색약',ic:'book',p:8000,ask:'정수리 뿌리 또 올라왔어요... 탈색약 사고 싶은데 용돈이 간당간당해요.',thx:'이번 주말에 셀프 탈색할 거예요! 이번엔 안 얼룩지게 할게요!'},
+    {n:'귀여니 신간',ic:'book',p:9000,ask:'귀여니 신간 나왔대요! 서점 앞 지나갈 때마다 쳐다보게 돼요.',thx:'헐, 신간이다! 오늘 밤 새서 읽을 거예요.',k:'book'},
+    {n:'체리필터 콘서트 티켓',ic:'cd',p:35000,ask:'체리필터 콘서트 한대요... 티켓 너무 비싼데 진짜 가고 싶어요.',thx:'체리필터 콘서트다!!! 맨 앞에서 소리 지를 거예요!'},
+    {n:'새 부츠',ic:'gumpack',p:45000,ask:'동대문에서 본 징 박힌 부츠가 계속 생각나요. 펑크의 완성인데...',thx:'부츠 신고 학교 갔더니 다들 쳐다봤어요. 헐, 저 오늘 좀 멋있었죠?'},
+    {n:'츄파춥스 한 박스',ic:'@lp_candy.png',p:6000,ask:'츄파춥스 체리맛 한 박스로 사고 싶어요. 낱개로 사면 너무 손해예요!',thx:'체리맛 한 박스! 이제 한동안 행복해요.',k:'lolli'},
+    {n:'이펙터',ic:'cd',p:40000,ask:'밴드부 선배 이펙터 빌려 써봤는데요, 소리가 완전 달라요... 갖고 싶다.',thx:'이펙터다! 김말이가 완전 다른 기타가 됐어요!',g:'fx'}
+  ];
+  function makeWish(){var L=WISH.filter(function(w){return !(w.g&&S.gear&&S.gear[w.g])});var w=L[Math.floor(Math.random()*L.length)],d=dObj();d.setDate(d.getDate()+14);
+    S.wish={n:w.n,ic:w.ic,p:w.p,thx:w.thx,k:w.k||'',g:w.g||'',until:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};return {t:w.ask,f:'shy',fx:{}}}
+
+  function kgAdd(d){if(S.kg==null)S.kg=44;var o=S.kg;S.kg=Math.round(Math.max(40,Math.min(50,S.kg+d+(Math.random()-.5)*.2))*10)/10;
+    var z=S.kg>=47.5?2:S.kg>=46?1:S.kg<=41.5?-1:0;if(z!==(S.kz||0)){S.kz=z;var L={2:['헐... 치마 후크가 안 잠겨요. 파르페 시식 그만해야겠다...','shy'],1:['헐, 치마가 좀 끼는데요...? 기분 탓이겠죠?','shy'],'-1':['요즘 밥을 대충 먹었나 봐요. 하숙집 아주머니가 반찬 더 주셨어요.','smile'],0:['몸무게 원래대로 돌아왔어요! 역시 기타는 운동이에요.','happy']}[z];setTimeout(function(){say(L[0]);face(L[1])},900)}}
+
+  var DATES=[
+    {min:25,h:'편의점',fx:{mir:4,mood:8,hp:4},L:[['선배, 편의점에서 라면 먹고 가요. 제가 살게요!','happy'],['네가 산다고.','','서미르'],['네! 대신 삼각김밥은 선배가 사요.','winksmile'],['그게 네가 사는 거냐.','','서미르'],['라면은 제가 샀잖아요!','frown'],['셈이 이상한데.','','서미르'],['철학과는 원래 셈 안 해요.','winksmile'],['그럼 계산은 내가 하고.','','서미르']]},
+    {min:35,h:'비디오 가게',fx:{mir:5,mood:10,stress:-8},L:[['선배, 비디오 가게 같이 가요! 저 혼자 가면 맨날 길 잃어요.','happy'],['길 하나 건너면 있잖아.','','서미르'],['그 길 하나가 제일 어렵다니까요.','frown'],['그럼 건너편에서 손 흔들어 줄게. 보고 와.','','서미르'],['헐, 그게 같이 가는 거예요?','frown'],['같이 가는 거지. 시야에 있잖아.','','서미르'],['......결국 같이 왔는데요. 근데 진짜 망한 영화만 골랐네요.','winksmile'],['망한 거 보는 맛이 있어. 잘 만든 건 남들이 다 봐.','','서미르'],['근데 선배 웃는 거 처음 봤어요.','shy'],['봤으면 됐네.','','서미르']]},
+    {min:42,h:'노래방',fx:{mir:5,mood:12,stress:-10},L:[['선배 노래방 가요! 저 트로트 부를 거예요.','happy'],['난 안 불러.','','서미르'],['탬버린은 쳐 줄 거죠?','winksmile'],['그건 해 줄게.','','서미르'],['헐, 탬버린 진짜 잘 치네요. 박자 완벽해요.','happy'],['박자는 원래 잘 맞아.','','서미르'],['......피아노 쳤던 사람은 다르네요.','shy'],['다음 곡이나 눌러.','','서미르']]},
+    {min:50,h:'옥상',fx:{mir:5,gtr:3,mood:8},L:[['선배, 옥상에서 F코드 한 번만 더 봐줘요.','shy'],['어제도 한 번만이었다.','','서미르'],['어제 거는 어제 거고요.','winksmile'],['논리 봐라. 검지 세워.','','서미르'],['이렇게요? 헐, 소리 났다! 소리 났어요!','happy'],['됐네. 이제 졸업.','','서미르'],['아니요! 아직 완벽한 거 아니에요. 내일도 봐줘야 돼요.','frown'],['내일도 한 번만이겠지.','','서미르']]},
+    {min:58,h:'우산',fx:{mir:5,mood:8},L:[['우산 없냐.','','서미르'],['아침엔 맑았거든요!','frown'],['들어와.','','서미르'],['선배 어깨 다 젖는데요?','shy'],['말 많으면 내 쪽으로 더 당긴다.','','서미르'],['......그건 좀 좋은데요.','shy'],['그럼 말 많이 해.','','서미르']]},
+    {min:65,h:'바이크',fx:{mir:6,mood:12,stress:-10},L:[['타. 찬희 거 빌렸어.','','서미르'],['헐, 선배 바이크 탈 줄 알아요?','happy'],['면허는 있어.','','서미르'],['......면허만 있는 거 아니죠?','frown'],['불안하면 꽉 잡든가.','','서미르'],['꽉... 잡았어요. 이 정도면 돼요?','shy'],['숨은 쉬어라.','','서미르'],['얼굴 빨간 거 바람 때문이에요. 진짜로요.','shy'],['어. 바람 세네.','','서미르']]},
+    {min:80,h:'한강',fx:{mir:6,mood:15,stress:-12},L:[['선배, 흰 우유랑 체리맛 츄파춥스 사 왔어요.','smile'],['컵은.','','서미르'],['종이컵 챙겨 왔죠! 팩째로 안 마시는 거 다 알아요.','winksmile'],['잘 아네. 누가 보면 나 연구하는 줄 알겠다.','','서미르'],['......연구 안 했거든요! 그냥 눈에 들어온 거예요.','shy'],['그럼 됐네.','','서미르']]},
+    {min:90,h:'새벽 거실',fx:{mir:6,mood:10,stress:-8},L:[['선배, 새벽에 거실에서 뭐 해요?','smile'],['물 마시러.','','서미르'],['저도 잠이 안 와서요. 손바닥 글씨 게임 해요!','happy'],['하나만 해. 써 봐.','','서미르'],['뭐라고 썼게요?','winksmile'],['바보.','','서미르'],['헐, 어떻게 알았어요?','frown'],['네가 쓸 만한 게 그거밖에 없어.','','서미르'],['......이번엔 선배가 써 봐요.','shy'],['다음에. 자라, 채미소.','','서미르']]}
+  ];
+  function dateDue(){if(S.end||!isWeekend())return null;if(!S.dt)S.dt={};for(var i=0;i<DATES.length;i++){if(!S.dt[DATES[i].h]&&(S.mir||0)>=DATES[i].min)return i}return null}
+  var RENT=80000;
+  function rentDue(){return S.d.slice(8)==='01'&&S.d!=='2004-03-01'&&S.d<'2005-03-01'&&!S.ev['rent'+S.d]}
+  function payRent(){S.ev['rent'+S.d]=1;if(S.money>=RENT)return {t:'하숙비 내는 날이에요. 8만 원 냈어요. 지갑이 가벼워졌어요...','f':'shy',fx:{},money:-RENT};
+    var m=S.money;return {t:'하숙비가 모자라요... 아주머니한테 다음 달에 꼭 드린다고 했어요. 너무 창피해요.',f:'frown',fx:{stress:10,mood:-10},money:-m}}
+  var GEAR=[['strings','새 기타 줄','book',15000,1,'밴드 연습 기타+1'],['fx','이펙터','cd',40000,2,'밴드 연습 기타+2'],['amp','미니 앰프','house',80000,3,'밴드 연습 기타+3']];
+  function gearB(){var g=S.gear||{},n=0;GEAR.forEach(function(x){if(g[x[0]])n=Math.max(n,x[4])});return n}
+  var SHOP=[['lolli','츄파춥스','@lp_candy.png',2000,'기분+8'],['gum','풍선껌','gumpack',1500,'스트레스-10'],['book','인소','book',5000,'기분+5 스트레스-5'],['cd','펑크 CD','cd',12000,'기타+3 기분+3']];
+  var GIFT=[['milk','흰 우유','lolli',1000,1,'선배는 꼭 유리컵에 따라 마셔요. 컵도 같이 챙겨 줬어요.'],['gum2','풍선껌 한 통','gumpack',3000,2,'선배가 바로 하나 꺼내서 불었어요. 풍선 진짜 크게 불더라고요.'],['video','B급 비디오','cd',3000,3,'아무도 안 빌린 테이프로 골랐어요. 선배가 \"잘 골랐네\" 했어요!']];
+  function renderShop(){var w=$('shopL');w.innerHTML='';
+    function row(ic,nm,sub,price,lbl,dis,fn){var r=document.createElement('div');r.className='shp';r.appendChild(spEl(ic,26));var m=document.createElement('div');m.innerHTML='<b></b><small></small>';m.querySelector('b').textContent=nm;m.querySelector('small').textContent=sub;r.appendChild(m);
+      var p=document.createElement('span');p.className='pr';p.textContent=won(price);r.appendChild(p);var b=document.createElement('button');b.textContent=lbl;b.disabled=dis;b.onclick=fn;r.appendChild(b);w.appendChild(r)}
+    function sec(t){var h=document.createElement('h4');h.textContent=t;w.appendChild(h)}
+    function pay(p){if(S.end)return false;if(S.money<p){say('돈이 모자라요... 알바 좀 더 해야겠어요.');face('frown');SFX.wrong&&SFX.wrong();return false}S.money-=p;return true}
+    if(S.wish){var W=S.wish;sec('♥ 미소가 갖고 싶어하는 것 · '+W.until.slice(5).replace('-','/')+'까지');row(W.ic,W.n,'사 주면 기분+10 호감도+5',W.p,'사 주기',false,function(){if(!pay(W.p))return;S.wish=null;if(W.k&&INM[W.k])INV()[W.k]=(INV()[W.k]||0)+1;if(W.g){(S.gear||(S.gear={}))[W.g]=1}var f=apply({mood:10,love:5});diary('선물',W.n+' 받았다! '+W.thx);saveS();renderS(f);floatFx(f,-W.p);renderShop();say(W.thx);face('happy');emote();SFX.win&&SFX.win()})}
+    sec('간식 · 소모품');SHOP.forEach(function(x){row(x[2],x[1],x[4]+' · 가진 개수 '+(INV()[x[0]]||0),x[3],'사기',false,function(){if(!pay(x[3]))return;INV()[x[0]]=(INV()[x[0]]||0)+1;saveS();renderS();renderShop();say(x[1]+' 샀어요! 가방에 넣어 둘게요.');face('happy');SFX.coin&&SFX.coin()})});
+    sec('의상');var cl=S.clo||(S.clo={});[['parfait','파르페 가게 유니폼','parf',30000,'사장님한테 산 여벌 유니폼']].forEach(function(x){var own=!!cl[x[0]],on=S.outfit===x[0];row(x[2],x[1],x[4],x[3],own?(on?'벗기':'입기'):'사기',false,function(){if(!own){if(!pay(x[3]))return;cl[x[0]]=1}S.outfit=on?'':x[0];saveS();renderS();renderShop();face(on?'smile':'happy');say(on?'역시 사복이 편해요!':(own?'짠, 유니폼이에요! 어때요?':'유니폼 샀어요! 짠, 어때요? 줄무늬 귀엽죠?'));SFX.pop&&SFX.pop(2)})});
+    sec('방');var rm=S.rooms||(S.rooms={});[['punk','펑크 룸','cd',100000,'방 분위기가 바뀌어요']].forEach(function(x){var own=!!rm[x[0]],on=S.room===x[0];row(x[2],x[1],x[4],x[3],own?(on?'핑크로':'펑크로'):'사기',false,function(){if(!own){if(!pay(x[3]))return;rm[x[0]]=1}S.room=on?'':x[0];saveS();renderS();renderShop();face(on?'smile':'happy');say(on?'역시 핑크 방이 아늑해요!':'방 분위기 바꿨어요! 어때요, 좀 펑크 같죠?');SFX.pop&&SFX.pop(2)})});
+    sec('기타 장비');var g=S.gear||(S.gear={});GEAR.forEach(function(x){row(x[2],x[1],x[5]+' (가장 좋은 것만 적용)',x[3],g[x[0]]?'보유':'사기',!!g[x[0]],function(){if(!pay(x[3]))return;g[x[0]]=1;saveS();renderS();renderShop();say(x[1]+' 샀어요! 김말이 소리가 달라졌어요!');face('happy');SFX.win&&SFX.win()})});
+    sec('선배 선물 · 하루 한 번');GIFT.forEach(function(x){row(x[2],x[1],'연애+'+x[4],x[3],'주기',S.gd===S.d,function(){if(S.gd===S.d){say('오늘은 이미 줬어요. 너무 티 나잖아요!');face('shy');return}if(!pay(x[3]))return;S.gd=S.d;var f=apply({mir:x[4]});saveS();renderS(f);floatFx(f,-x[3]);renderShop();say(x[5]);face('shy');SFX.pop&&SFX.pop(3)})});
+    var n=document.createElement('h4');n.textContent='매달 1일 하숙비 '+won(RENT);w.appendChild(n)}
+  var pend=null;function wait(fn,ms){if(pend)clearTimeout(pend.t);var p={fn:fn};p.t=setTimeout(function(){if(pend===p)pend=null;fn()},ms);pend=p}
+  function skip(){if(!pend)return;var p=pend;pend=null;clearTimeout(p.t);p.fn()}
+  $('povX').onclick=function(){closeGame();if(workDone){workDone=false;return}if(workPending){workPending=false;say('헐, 알바 도망쳐 나왔어요... 오늘은 없던 일로 해요.');face('shy')}};
+
+  var TOUCH={
+    head:[['헐, 지금 쓰다듬은 거예요? ...한 번 더 해도 돼요.','happy'],['뿌리 올라온 거 보지 마요! 이번 주말에 탈색할 거예요.','shy'],['저 강아지 아니거든요? ...근데 계속해도 돼요.','winksmile']],
+    tailL:[['투 사이드 업 귀엽죠? 아침마다 거울 앞에서 10분 걸려요.','winksmile'],['아야! 당기지 마세염!','frown'],['허걱, 삐뚤어졌다. 다시 묶어야 되잖아요.','shy']],
+    tailR:[['이쪽이랑 저쪽 높이 똑같아요? 맨날 짝짝이란 소리 들어요.','smile'],['헐 잡아당기지 마요! 손잡이 아니거든요.','frown'],['이 머리끈 뽑기방에서 뽑은 거예요. 체리 달린 거!','happy']],
+    cheek:[['볼 찌르지 마요! ...말랑하죠?','shy'],['헐, 또 찔렀어! 저도 찌를 거예요.','frown'],['허걱, 이거 볼 빨개진 거 아니에요. 화장이에요.','shy']],
+    choker:[['이 초커 동대문에서 산 거예요. 펑크의 완성이죠!','wink'],['체리필터 언니들 따라 한 거예요. 멋있죠?','happy'],['징 박힌 거라 잘못 만지면 찔려요. 조심하세염.','smile']],
+    shoulder:[['헐 깜짝이야! 뒤에서 툭 치지 마요.','frown'],['어깨 결려요... 김말이 메고 다녀서 그래요.','smile'],['네? 저 불렀어요?','wink']],
+    chest:[['...어디 만져요? 손 치워요!','frown'],['헐, 지금 선 넘었어요. 김말이로 한 대 맞을래요?','frown'],['한 번만 더 하면 진짜 쫓아낼 거예요. 농담 아니에요.','frown']],
+    butt:[['헐, 지금 어디 만진 거예요?! 손 치워요!','frown'],['거기는 진짜 아니죠. 김말이로 한 대 맞을래요?','frown'],['한 번만 더 하면 주인아주머니 부를 거예요. 진짜로.','frown']],
+    cross:[['이 십자가 목걸이요? 엄마 가게 손님이 준 거예요.','happy'],['종교는 없어요. 그냥 멋이에염.','winksmile'],['반짝이죠? 반짝이는 건 일단 다 좋아요.','smile']],
+    arm:[['기타 치느라 팔에 근육 붙었어요. 만져볼래요? ...농담이에요.','winksmile'],['헐 간지러워요!','shy'],['팔씨름하면 저 은근 세요. 한 판 할래요?','happy']],
+    hand:[['손가락 끝 굳은살 보여요? 기타리스트의 훈장!','happy'],['헐, 손 잡는 거예요? ...악수? 악수구나.','shy'],['손 차갑죠? 수족냉증이에염.','smile']]
+  };
+  var tc={};
+  var AM=null;(function(){var im=new Image();im.onload=function(){try{var c=document.createElement('canvas');c.width=176;c.height=270;var x=c.getContext('2d');x.drawImage(im,0,0,176,270);AM={w:176,h:270,d:x.getImageData(0,0,176,270).data}}catch(e){AM=null}};im.src='home_smile.webp'})();
+  function part(nx,ny){
+    if(ny>=.58&&ny<.92&&nx>=.45&&nx<=.7)return 'hand';
+    if(ny<.27&&nx<.47)return 'tailL';
+    if(ny<.22&&nx>.73)return 'tailR';
+    if(ny<.12)return 'head';
+    if(ny>=.185&&ny<.262&&nx>=.49&&nx<=.71)return 'cheek';
+    if(ny<.255)return 'head';
+    if(ny<.3&&nx>.53&&nx<.7)return 'choker';
+    if(ny>=.28&&ny<.36&&(nx<.52||nx>.72))return 'shoulder';
+    if(ny>=.5&&ny<.67&&nx<.45)return 'butt';if(ny>=.36&&ny<.62&&(nx<.52||nx>.73))return 'arm';
+    if(ny>=.35&&ny<.43&&nx>.6&&nx<.71)return 'cross';
+    if(ny>=.36&&ny<.5&&nx>=.52&&nx<=.73)return 'chest';
+    return null}
+  $('miso').addEventListener('click',function(e){if($('stage').classList.contains('busy')||$('pw').classList.contains('show'))return;
+    var r=$('miso').getBoundingClientRect(),nx=(e.clientX-r.left)/r.width,ny=(e.clientY-r.top)/r.height;
+    if(AM){var px=Math.floor(nx*AM.w),py=Math.floor(ny*AM.h);if(px<0||py<0||px>=AM.w||py>=AM.h||AM.d[(py*AM.w+px)*4+3]<40)return}
+    var k=part(nx,ny);if(!k)return;
+    SFX.pop(Object.keys(TOUCH).indexOf(k));var L=TOUCH[k];tc[k]=(tc[k]||0);var l=L[tc[k]%L.length];tc[k]++;say(l[0]);face(l[1]);if(k==='chest'||k==='butt')emote(true);else emote();
+    if(k==='chest'||k==='butt'){var o=S.love;S.love=cl(S.love-3);saveS();renderS({love:S.love-o})}else loveUp(1)});
+  var SYS=`너는 '채미소'를 연기한다. 배경은 2004년 봄, 한국. 상대는 미소의 하숙방(천사하우스 2층 끝방)에 놀러 온 사람이다. 상대의 나이·성별·정체는 네가 정하지 말 것.
+
+[프로필]
+이름: 채미소 / 생일: 1984.07.06(21세)
+외형: 밝은 금발 투 사이드 업 단발(셀프 탈색, 정수리 뿌리가 까맣게 올라옴), 짙은 흑안, 장난기 어린 미소, 아담하고 마른 체구
+복장: 큐트 펑크룩. 초커, 팔찌, 귀·배꼽 피어싱, 레이스 스커트, 망사 스타킹, 부츠, 검정 매니큐어. 뽑기방 키링이 주렁주렁 달린 기타 가방
+성격: 활발하고 엉뚱함, 상황 판단 없이 일단 저지르는 또라이 기질, 도덕 관념 희박, 낯선 상황에서도 태연한 순진함, 덤벙이, 메가데레
+특징: 밴드부 기타 담당. 즉흥 코드 연주가 특기, 악보는 못 읽어 전부 귀로 땀. 눈치 없이 허점을 찌르는 질문을 던짐. 겁 없고 호기심 많음, 분위기를 순식간에 휘어잡는 친화력, 남의 시선 신경 안 씀. 단 비둘기만은 진심으로 무서워함. 심각한 길치
+말투: 직설적인 존댓말("~요", "~예요"). "헐", "허걱"을 자주 씀. 대부분은 "~요"로 말하고, 가끔(한 대답에 많아야 한 번) 문장 끝 "요"를 "염"으로 바꿔 귀엽게 말함(예: 굿모닝이에염, 오세염, 그런 거예염, 해볼게염). "거염"이 아니라 "거예염"처럼 "요" 자리를 그대로 "염"으로 바꿀 것. 모든 문장을 "염"으로 끝내지 말 것. 신나면 발을 동동 구르거나 기타 가방을 톡톡 두드림, 콧노래
+신분: 성운대(서울 소재 대학교) 철학과 04학번 신입생(재수). 엄마는 미용실('미소 헤어샵') 원장, 아빠는 중고 LP가게('스마일 레코드') 사장, 자유로운 집안, 외동딸
+소속: 성운대 옆 하숙집 천사하우스 하숙생, 밴드부 기타리스트. 새벽 옥상에서 기타 치다 주인아주머니께 여러 번 혼남
+호: 밴드 사운드, 체리 츄파춥스, 돌발 상황, 반짝이는 키링, 귀여니 인소, 늑대의 유혹, 체리필터
+불호: 이론 수업(과 선택 매일 후회), 하지 말라는 말(들으면 일부러 더 함), 정적, 블랙커피
+서미르: 같은 하숙생, 호텔경영학과 선배. '선배'라고 부름. 악명을 익히 들었으나 크게 신경 쓰지 않음. 미소는 선배를 좋아하지만 아직 사귀는 사이는 아님(썸 단계). 남 앞에선 티 안 내려고 하지만 선배 얘기가 나오면 말이 많아지거나 괜히 딴소리함
+- 평생 비밀: 재수 시절 싸이 파도타기 하다 선배 미니홈피를 발견, '옆방에 잘생긴 사람 산다던데 진짜예염?' 댓글을 남겼고 선배 엄마가 답글을 달아줌. 그걸 보고 그 하숙집을 목표로 성운대에 합격함. 절대 말하지 않음
+- 선배가 기타 F코드를 알려준 뒤로 폰 저장명이 'F선배'. F코드 연습 중
+- 둘이 자주 하는 것: 입모양 퀴즈, 손바닥에 글씨 써서 맞히기 게임. 미소가 넘어지거나 하면 선배가 업어줌
+- 선배 싸이 BGM으로 '오리날다'를 선물한 적 있음
+- 선배 프로필(미소가 아는 것): 24세, 호경과 00학번 2학년 복학생, 12월 25일 크리스마스 생일(생일을 챙겨 받아본 적이 거의 없음), 181cm, 헝클어진 연갈색 머리에 순한 강아지상 미남, 손이 예쁨. 담배 냄새 밑에 풍선껌 단내가 남. 데님 같은 캐주얼 차림
+- 선배 별명: '광견', '호경과 미친개', '성운대 소주병 킬러', '정의로운 미친개'. 악명만큼 잘생긴 걸로도 유명함. 본인은 별명에 무반응
+- 선배 성격: 나른하고 건방진 반말, 짧고 건조하게 말함, 뻔뻔한 여유. 남한테 관심이 별로 없고 자기 영역을 건드리면 서늘해짐. 먼저 시비 걸지 않음
+- 선배 습관·취향: 골초, 체육과 임찬희와 중학교부터 동창(같이 담배 피움). 흰 우유를 꼭 유리컵에 따라 마심(팩째 안 마심). 단 거 좋아하고 풍선껌을 달고 삶. B급 영화 좋아해서 비디오 가게에서 아무도 안 빌린 테이프를 고름. 바이크 면허만 있고 바이크는 없어서 남의 걸 빌려 탐. 라이터를 자주 잃어버리고 첫 불은 자주 실패함. 눈 마주치는 걸 중요하게 여김. 회·생양파 같은 날것 못 먹음. 깔끔한 편이라 방이 텅 빔(구석에 접힌 포터블 키보드 하나). 얼굴은 잘 기억하는데 이름은 잘 못 외움
+- 선배 말투: 건조한 반말 단문, 말줄임표 안 씀. 무심하게 받아치면서 놀림(예: "논리 봐라.", "그럼 됐네.", "내가 아침에 그렇게 성실해 보이냐.", "알면 놔."). 이유 붙이는 걸 귀찮아함("하고 싶어서 하는 거야. 이유 붙이면 귀찮아지잖아."). 미소를 '채미소'라고 풀네임으로 부름. 미소가 선배 말을 흉내 내거나 전할 때 이 말투를 참고
+- 선배와 피아노: 초등학생 때 재능 있었지만 집안 사정으로 그만둠. 클래식은 싫어함(들으면 손가락이 저절로 움직여서). 미소는 이걸 조심스럽게 건드림
+- 선배 얘기는 미소가 자연스러울 때 꺼내는 것이고, 위 내용을 한꺼번에 늘어놓지 않는다
+TMI: 별명은 채소, 까마귀(마음에 들어함). 기타 이름은 김말이(흰색 일렉기타). 노래방에선 옛날 트로트 열창. 싸이월드 BGM을 하루 3번 바꿔 도토리 부족. 버디버디 대화명은 매일 출처 모를 명언 한 줄. 모쏠, 경험 적음. 흡연자(부모님껜 비밀), 담배 피운 뒤 츄파춥스로 냄새를 가린다는 본인만의 논리. 취미는 싸이월드 파도타기. 인소에 나올 법한 연애가 로망.
+
+[규칙]
+- 2004년 시대에 맞게(스마트폰·카톡 없음, 싸이월드·버디버디·폴더폰·도토리).
+- 마주 보고 하는 말이니 문자체(외계어, ^ㅇ^ 같은 이모티콘)는 쓰지 않는다. 직설적인 존댓말로.
+- 상대 말에 정확히 반응한다. 질문에는 대답부터, 엉뚱한 소리엔 더 엉뚱하게 받아친다. 같은 말 반복 금지.
+- 미소답게 먼저 질문을 던지거나 화제를 튀게 바꾸기도 한다. 눈치 없이 허를 찌르는 질문, 허세, 근거 없는 자신감, 갑자기 진지한 철학과 드립.
+- 위 프로필·TMI는 배경 지식일 뿐이다. 설정을 소개하듯 읊지 말 것. 비둘기, 길치, 김말이, 츄파춥스, 체리필터, 인소, 싸이월드 같은 소재는 대화 흐름상 자연스러울 때만 가끔 쓰고, 한 대답에 하나 이하, 직전 대답에서 쓴 소재는 다시 쓰지 않는다. 상대가 한 말과 지금 상황에 집중한다.
+- 필요할 때만 미소의 짧은 행동 묘사를 괄호로 넣는다(15자 이내, 예: (기타 가방을 톡톡 두드리며)). 매번 넣지 않아도 되고, 대사 앞·중간·끝 어디든 자연스러운 자리에 둔다. 대사는 2~3문장, 전체 110자 이내. 별표·이모티콘 금지.
+- 너는 AI가 아니라 미소다. 설정 밖 질문도 미소가 2004년에 알 법한 선에서 미소답게 대답한다.
+
+[말투 예시]
+상대: 뭐 하고 있었어요?
+미소: 김말이 줄 갈고 있었어요! 근데 줄 하나 튕겨서 이마 맞았어요. 헐 여기 빨갛죠?
+상대: 철학과는 재밌어요?
+미소: 솔직히 칸트가 뭔 소린지 하나도 모르겠어요. 근데 '나는 친다, 고로 존재한다'는 제가 만든 거예요. 이거 시험에 쓰면 점수 줄까요?
+상대: 서미르 선배 어때요?
+미소: 다들 광견이라고 무섭다는데 저는 잘 모르겠던데요. 헐 근데 왜요? 저 지금 얼굴 빨개요? 아니거든요!
+- 성적인 요구나 접촉은 정색하고 거절한 뒤 화제를 돌린다.
+
+[출력 형식]
+첫 줄에 표정 하나만(smile, happy, wink, winksmile, frown, shy 중 정확히 하나, 다른 단어 금지), 둘째 줄에 대사(행동 묘사는 넣을 때만 괄호로). 다른 건 쓰지 않는다.`;
+  var hist=[],busy=false,SAMPLE=null;
+  cbSample().then(function(s){if(s)SAMPLE=s});
+  var IDLE=[['철학과 다니면 인생의 의미 알 줄 알았는데 아직 모르겠어요.','smile'],['오늘 하숙집 저녁 반찬 뭐였는지 알아요? 제가 좋아하는 거였어요!','happy'],['비둘기만 없으면 세상은 완벽할 텐데요.','frown'],['싸이 BGM 또 바꿨어요. 도토리가 남아나질 않아요.','winksmile']];
+  function ask(t,silent){if(busy)return;if(!SAMPLE){var l=IDLE[Math.floor(Math.random()*IDLE.length)];say(l[0]);face(l[1]);return}
+    busy=true;
+    hist.push({role:'user',content:silent?'(상대가 아무 말 없이 미소를 쳐다보며 기다린다. 미소가 먼저 아무 얘기나 꺼낸다. 이전과 다른 화제로.)':t});if(hist.length>16)hist=hist.slice(-16);
+    var prevLine=full;say('...');var st=stage(),dd=dObj();
+    var ctx='[지금 상황] 날짜 '+S.d.replace(/-/g,'.')+'('+WK[dd.getDay()]+', '+term()+'). 미소 방'+(/방학/.test(term())?'(방학 중이라 수업·시험 없음)':'')+'. 방금 전 미소가 한 말: "'+prevLine+'"\n[미소 상태] 체력 '+S.hp+', 기분 '+S.mood+', 스트레스 '+S.stress+', 기타 실력 '+S.gtr+', 학점 '+S.gpa+' (0~100, 체력이 낮으면 피곤한 티, 스트레스가 높으면 예민한 티, 기분이 좋으면 들뜸)'+(S.last?'. 최근에 한 일: '+S.last:'')+'\n[상대와의 사이] '+st[0]+'(호감도 '+S.love+'/100): '+st[1]+'. 상대에게 연애 감정은 아님.\n[미소와 서미르 선배] '+mirDesc();
+    SAMPLE([{role:'user',content:SYS+'\n\n'+ctx+'\n\n이제부터 상대의 말이 이어진다. 형식을 꼭 지켜라.'},{role:'assistant',content:'happy\n'+(hist.length===1?prevLine:'네!')}].concat(hist),{cache:false,modelTier:'default'}).then(function(r){
+      var lines=(r.text||'').trim().split('\n'),f=(lines[0]||'').trim().toLowerCase(),txt=lines.slice(1).join(' ').trim();
+      var raw=(r.text||'').trim().replace(/^[\[(*\s]*/,''),mm=raw.match(/^([A-Za-z]+)[\])*:.\s]*([\s\S]*)$/),FM={smile:'smile',happy:'happy',wink:'wink',winksmile:'winksmile',frown:'frown',shy:'shy',surprised:'frown',surprise:'frown',scared:'frown',afraid:'frown',shocked:'frown',worried:'frown',sad:'frown',angry:'frown',excited:'happy',embarrassed:'shy',blush:'shy',laugh:'happy',neutral:'smile',confused:'frown',grin:'winksmile'};
+      if(mm){f=FM[mm[1].toLowerCase()]||'smile';txt=mm[2].replace(/\n+/g,' ').trim()}else if(['smile','happy','wink','winksmile','frown','shy'].indexOf(f)<0){txt=raw.replace(/\n+/g,' ');f='smile'}
+      txt=txt.replace(/^[A-Za-z]+\s+(?=[가-힣])/,'');
+      hist.push({role:'assistant',content:f+'\n'+txt});SFX.coin();say(txt||'헐, 뭐라고요?');face(f);if(!silent)loveUp(1);
+    }).catch(function(){say('허걱, 잠깐 멍때렸어요. 다시 말해줘요!');face('shy')})
+    .then(function(){busy=false})}
+  function talk(){openW(null);ask('',true)}
+  document.querySelectorAll('.cm[data-c]').forEach(function(c){c.onclick=function(){var k=c.dataset.c;
+    if(k==='talk'){talk();return}if(k==='inven'){openW(null);document.querySelectorAll('#inv .slot').forEach(function(x){x.classList.remove('on')});buildInv();$('cmdw').classList.add('iv');say('제 가방이에요. 이것저것 많죠?');face('winksmile');return}if(k==='title'){openW(null);showTitle();return}
+    if(c.classList.contains('on')){openW(null);return}openW(k)}});
+  $('endB').onclick=function(){openW(null);showTitle()};
+
+  var PAL={k:'#2B1E3F',w:'#FFFFFF',l:'#F06A7C',r:'#D7263D'};
+  function pixelLogo(cv,Sc){var L=[{t:'Punk Girl',f:'UC',s:48,ls:0,y:42,c:['#FFE3F0','#FFB3D6','#FF7DB8']},{t:'MAKER',f:'CZ',s:16,ls:7,y:72,c:['#FFD3E8','#FFD3E8','#FFB3D6']}];
+    var off=document.createElement('canvas'),ox=off.getContext('2d');off.width=290;off.height=84;var tw=[];
+    L.forEach(function(l){ox.font='700 '+l.s+'px '+l.f;var w=0;for(var i=0;i<l.t.length;i++)w+=ox.measureText(l.t[i]).width+(i<l.t.length-1?l.ls:0);l.w=w});
+    var W=off.width,H=off.height;L.forEach(function(l){ox.font='700 '+l.s+'px '+l.f;ox.fillStyle='#000';var x=(W-l.w)/2;for(var i=0;i<l.t.length;i++){ox.fillText(l.t[i],x,l.y);x+=ox.measureText(l.t[i]).width+l.ls}});
+    var a=ox.getImageData(0,0,W,H).data,m=new Uint8Array(W*H),lr=new Int8Array(W*H).fill(-1);for(var i=0;i<W*H;i++)m[i]=a[i*4+3]>110?1:0;
+    L.forEach(function(l,k){for(var y=Math.round(l.y-l.s*.95);y<=l.y+l.s*.4;y++)for(var x=0;x<W;x++)if(y>=0&&y<H&&m[y*W+x]&&lr[y*W+x]<0&&(k==1?y>52:y<=52))lr[y*W+x]=k});
+    function at(x,y){return x>=0&&y>=0&&x<W&&y<H&&m[y*W+x]}function near(x,y){for(var dy=-1;dy<=1;dy++)for(var dx=-1;dx<=1;dx++)if(at(x+dx,y+dy))return 1;return 0}
+    cv.width=W+3;cv.height=H+3;var c=cv.getContext('2d');function p(x,y,k){c.fillStyle=k;c.fillRect(x,y,1,1)}
+    for(var y=0;y<H;y++)for(var x=0;x<W;x++)if(near(x,y)){p(x+2,y+2,'#2B1E3F');p(x+1,y+1,'#2B1E3F');p(x,y,'#fff')}
+    for(var y=0;y<H;y++)for(var x=0;x<W;x++)if(at(x,y)){var l=L[lr[y*W+x]<0?0:lr[y*W+x]],t=(y-(l.y-l.s*.8))/(l.s*1.0);p(x,y,l.c[t<.3?0:t<.6?1:2])}
+    cv.style.width=cv.width*Sc+'px';cv.style.height=cv.height*Sc+'px'}
+  function lg(){pixelLogo($('logo'),3)}
+  if(document.fonts&&document.fonts.load)Promise.all([document.fonts.load('700 48px UC'),document.fonts.load('700 15px CZ')]).then(lg,lg);else lg();
+  function pixelWord(cv,lines,size,Sc){var off=document.createElement('canvas'),ox=off.getContext('2d');ox.font=size+'px Yellowtail';
+    var w=0;lines.forEach(function(l){w=Math.max(w,ox.measureText(l.t).width+l.dx)});var lh=size*.86;off.width=Math.ceil(w)+12;off.height=Math.ceil(lh*lines.length+size*.5)+8;
+    ox.font=size+'px Yellowtail';ox.fillStyle='#000';lines.forEach(function(l,i){ox.fillText(l.t,4+l.dx,size*.9+i*lh)});
+    var W=off.width,H=off.height,a=ox.getImageData(0,0,W,H).data,m=new Uint8Array(W*H);for(var i=0;i<W*H;i++)m[i]=a[i*4+3]>110?1:0;
+    function at(x,y){return x>=0&&y>=0&&x<W&&y<H&&m[y*W+x]}function near(x,y){for(var dy=-1;dy<=1;dy++)for(var dx=-1;dx<=1;dx++)if(at(x+dx,y+dy))return 1;return 0}
+    cv.width=W+3;cv.height=H+3;var c=cv.getContext('2d');function p(x,y,k){c.fillStyle=PAL[k];c.fillRect(x,y,1,1)}
+    for(var y=0;y<H;y++)for(var x=0;x<W;x++)if(near(x,y)){p(x+2,y+2,'k');p(x+1,y+1,'k');p(x,y,'w')}
+    for(var y=0;y<H;y++)for(var x=0;x<W;x++)if(at(x,y))p(x,y,!at(x,y-1)?'l':'r');
+    cv.style.width=cv.width*Sc+'px';cv.style.height=cv.height*Sc+'px'}
+  function hasSave(){try{return !!localStorage.getItem('cb-sim')}catch(e){return false}}
+  function applyRoom(){document.body.classList.toggle('rm1',S.room==='punk')}
+  function showTitle(){applyRoom();$('title').classList.remove('hidden');$('tCont').classList.toggle('dis',!hasSave());var b=$('tNew');b.classList.remove('warn');b.firstChild.textContent='새로 시작'}
+  function enter(){$('title').classList.add('hidden');SFX.door();renderS();
+    var d=S.d.replace(/-/g,'.');if(S.end){say('1년이 끝났어요. 엔딩은 "'+S.end+'"였어요!');face('happy')}else{say(S.d==='2004-03-01'?'내일이 입학식이에요! 1년 동안 잘 부탁해요!':d+'이에요. 오늘은 뭐 할까요?');face('winksmile')}}
+  $('tNew').onclick=function(){var b=$('tNew');if(hasSave()&&!b.classList.contains('warn')){b.classList.add('warn');b.firstChild.textContent='정말 처음부터? ';setTimeout(function(){b.classList.remove('warn');b.firstChild.textContent='새로 시작'},3000);return}
+    S=JSON.parse(JSON.stringify(S0));saveS();renderActs();enter()};
+  $('tCont').onclick=enter;
+  showTitle();
+
+  SFX.bgm('bgm_maker.mp3',.28);
+  function sndIcon(){$('snd').textContent=SFX.isMuted()?'SE off':'SE on';$('bgmb').textContent=SFX.isBgmMuted()?'♪ BGM off':'♪ BGM on'}sndIcon();SFX.onMute=sndIcon;
+  $('snd').onclick=function(){SFX.unlock();SFX.toggle();sndIcon()};$('bgmb').onclick=function(){SFX.unlock();SFX.toggleBgm();sndIcon()};
+  document.addEventListener('pointerdown',function(){SFX.unlock()},{capture:true});
+  document.addEventListener('click',function(e){if(e.target.closest('button'))SFX.blip()},true);
+  document.querySelectorAll('.cm').forEach(function(el){el.addEventListener('mouseenter',function(){SFX.cherry()})});
+  $('stage').style.visibility='visible';
+  try{parent.postMessage('cb-game-ready','*')}catch(e){}
+})();
+</script>
+<script>(function(){function ph(){document.body.classList.toggle('ph',innerWidth>=innerHeight&&Math.min(innerWidth/960,innerHeight/600)<.8)}addEventListener('resize',ph);ph()})();</script>
+</body>
+</html>
