@@ -1,5 +1,5 @@
 var ALLOW = ['https://xn--2w2b19b12g.love', 'https://dengdeng-ai.github.io'];
-var MODEL = 'claude-sonnet-5-5';
+var MODEL = 'claude-haiku-5-5';
 var MAX_TOKENS = 700;
 var MAX_MSGS = 40;
 var MAX_CHARS = 14000;
