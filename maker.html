@@ -290,6 +290,10 @@
   function say(t,w){who(w);clearInterval(timer);full=t;sayEl.textContent='';nextEl.classList.remove('on');var i=0;timer=setInterval(function(){i++;if(i%3===0&&full[i-1]!==' ')SFX.type();paint(full.slice(0,i));if(i>=full.length)done()},40)}
   function paint(t){if(!/\(/.test(t)){sayEl.textContent=t;return}sayEl.innerHTML='';t.split(/(\([^)]*\)?)/).forEach(function(p){if(!p)return;if(p[0]==='('){var e=document.createElement('i');e.className='mv';e.textContent=p.replace(/^\(|\)$/g,'');sayEl.appendChild(e)}else sayEl.appendChild(document.createTextNode(p))})}
   function done(){clearInterval(timer);timer=null;paint(full);nextEl.classList.add('on')}
+  var liveFin=false;
+  function liveStart(){who();clearInterval(timer);full='';liveFin=false;sayEl.textContent='...';nextEl.classList.remove('on');var i=0;timer=setInterval(function(){if(i<full.length){i++;if(i%3===0&&full[i-1]!==' ')SFX.type&&SFX.type();paint(full.slice(0,i))}else if(liveFin&&full.length)done()},40)}
+  function liveSet(t){full=t;if(timer===null)paint(full)}
+  function liveFinish(t){full=t;liveFin=true;if(timer===null)paint(full)}
   $('dlg').onclick=function(e){if(timer){done();return}if(SCR){nextScr();return}skip()};
   $('stage').addEventListener('click',function(e){if(e.target.closest('#dlg,.win,#cho,button,input,textarea,a,#itip,#live,#povX'))return;if(document.getElementById('live')||$('pw').classList.contains('show'))return;if(!($('stage').classList.contains('busy')||SCR))return;if(timer){done();return}if(SCR){nextScr();return}skip()});
   function who(w){$('dlg').querySelector('b').textContent=w||'채미소';$('dlg').classList.toggle('mir',!!w)}
@@ -714,14 +718,11 @@ TMI: 별명은 채소, 까마귀(마음에 들어함). 기타 이름은 김말�
   function ask(t,silent){if(busy)return;if(!SAMPLE){var l=IDLE[Math.floor(Math.random()*IDLE.length)];say(l[0]);face(l[1]);return}
     busy=true;
     hist.push({role:'user',content:silent?'(상대가 아무 말 없이 미소를 쳐다보며 기다린다. 미소가 먼저 아무 얘기나 꺼낸다. 이전과 다른 화제로.)':t});if(hist.length>16)hist=hist.slice(-16);
-    var prevLine=full;say('...');var st=stage(),dd=dObj();
+    var prevLine=full;liveStart();var fE=null;var st=stage(),dd=dObj();
     var ctx='[지금 상황] 날짜 '+S.d.replace(/-/g,'.')+'('+WK[dd.getDay()]+', '+term()+'). 미소 방'+(/방학/.test(term())?'(방학 중이라 수업·시험 없음)':'')+'. 방금 전 미소가 한 말: "'+prevLine+'"\n[미소 상태] 체력 '+S.hp+', 기분 '+S.mood+', 스트레스 '+S.stress+', 기타 실력 '+S.gtr+', 학점 '+S.gpa+' (0~100, 체력이 낮으면 피곤한 티, 스트레스가 높으면 예민한 티, 기분이 좋으면 들뜸)'+(S.last?'. 최근에 한 일: '+S.last:'')+'\n[상대와의 사이] '+st[0]+'(호감도 '+S.love+'/100): '+st[1]+'. 상대에게 연애 감정은 아님.\n[미소와 서미르 선배] '+mirDesc();
-    SAMPLE([{role:'user',content:SYS+'\n\n'+ctx+'\n\n이제부터 상대의 말이 이어진다. 형식을 꼭 지켜라.'},{role:'assistant',content:'happy\n'+(hist.length===1?prevLine:'네!')}].concat(hist),{cache:false,modelTier:'default'}).then(function(r){
-      var lines=(r.text||'').trim().split('\n'),f=(lines[0]||'').trim().toLowerCase(),txt=lines.slice(1).join(' ').trim();
-      var raw=(r.text||'').trim().replace(/^[\[(*\s]*/,''),mm=raw.match(/^([A-Za-z]+)[\])*:.\s]*([\s\S]*)$/),FM={smile:'smile',happy:'happy',wink:'wink',winksmile:'winksmile',frown:'frown',shy:'shy',surprised:'frown',surprise:'frown',scared:'frown',afraid:'frown',shocked:'frown',worried:'frown',sad:'frown',angry:'frown',excited:'happy',embarrassed:'shy',blush:'shy',laugh:'happy',neutral:'smile',confused:'frown',grin:'winksmile'};
-      if(mm){f=FM[mm[1].toLowerCase()]||'smile';txt=mm[2].replace(/\n+/g,' ').trim()}else if(['smile','happy','wink','winksmile','frown','shy'].indexOf(f)<0){txt=raw.replace(/\n+/g,' ');f='smile'}
-      txt=txt.replace(/^[A-Za-z]+\s+(?=[가-힣])/,'');
-      hist.push({role:'assistant',content:f+'\n'+txt});SFX.coin();say(txt||'헐, 뭐라고요?');face(f);if(!silent)loveUp(1);
+    SAMPLE([{role:'user',content:SYS+'\n\n'+ctx+'\n\n이제부터 상대의 말이 이어진다. 형식을 꼭 지켜라.'},{role:'assistant',content:'happy\n'+(hist.length===1?prevLine:'네!')}].concat(hist),{cache:false,modelTier:'default',onText:function(T){var p=cbParse(T,false);if(!p)return;if(fE===null){fE=p.f;face(p.f)}liveSet(p.txt)}}).then(function(r){
+      var pp=cbParse(r.text,true),f=pp.f,txt=pp.txt;
+      hist.push({role:'assistant',content:f+'\n'+txt});SFX.coin();liveFinish(txt||'헐, 뭐라고요?');if(fE!==f)face(f);if(!silent)loveUp(1);
     }).catch(function(){say('허걱, 잠깐 멍때렸어요. 다시 말해줘요!');face('shy')})
     .then(function(){busy=false})}
   function talk(){openW(null);ask('',true)}

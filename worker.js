@@ -45,7 +45,8 @@ export default {
     }
     if (size > MAX_CHARS || m[m.length - 1].role !== 'user') return out({ error: 'size' }, 400, o);
 
-    var body = JSON.stringify({ model: MODEL, max_tokens: MAX_TOKENS, messages: m });
+    var stream = b.stream === true;
+    var body = JSON.stringify({ model: MODEL, max_tokens: MAX_TOKENS, messages: m, stream: stream });
     function call(auth) {
       var hd = { 'content-type': 'application/json', 'anthropic-version': '2023-06-01' };
       if (auth) hd['authorization'] = 'Bearer ' + env.ANTHROPIC_API_KEY; else hd['x-api-key'] = env.ANTHROPIC_API_KEY;
@@ -54,6 +55,7 @@ export default {
     var r = await call(authMode === true);
     if (r.status === 401) { r = await call(authMode !== true); if (r.status !== 401) authMode = (authMode !== true); }
     if (!r.ok) return out({ error: 'upstream', status: r.status, detail: (await r.text()).slice(0, 300) }, 502, o);
+    if (stream) return new Response(r.body, { status: 200, headers: Object.assign({ 'content-type': 'text/event-stream', 'cache-control': 'no-store' }, cors(o)) });
     var j = await r.json();
     var t = (j.content || []).map(function (c) { return c.text || '' }).join('');
     if (j.stop_reason === 'max_tokens') {
