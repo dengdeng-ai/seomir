@@ -611,6 +611,10 @@ TMI: 별명은 채소, 까마귀(마음에 들어함). 기타 이름은 김말�
       hist.push({role:'assistant',content:f+'\n'+txt});SFX.coin();liveFinish(txt||'헐, 뭐라고요?');if(fE!==f)face(f);
     }).catch(function(err){if(err&&err.code==='not_granted'){$('talk').classList.remove('on')}say('허걱, 잠깐 멍때렸어요. 다시 말해줘요!');face('shy')})
     .then(function(){busy=false;$('tsend').disabled=false;if(!silent)$('tin').focus()})}
+  (function(){var t=$('tin'),vv=window.visualViewport;
+    function fix(){if(!document.body.classList.contains('m'))return;var r=$('talk').getBoundingClientRect(),vb=vv?vv.offsetTop+vv.height:innerHeight,d=r.bottom-vb+6;if(Math.abs(d)>2)scrollBy(0,d)}
+    t.addEventListener('focus',function(){[80,300,650].forEach(function(ms){setTimeout(fix,ms)})});
+    if(vv)vv.addEventListener('resize',function(){if(document.activeElement===t)setTimeout(fix,60)})})();
   $('talk').onsubmit=function(e){e.preventDefault();var t=$('tin').value.trim();if(!t)return;$('tin').value='';ask(t)};
   $('dlg').onclick=function(){if(timer){done();return}ask('',true)};
   $('lbtn').onclick=function(e){e.stopPropagation();var o=$('log').classList.toggle('show');$('lbtn').classList.toggle('act',o);if(o)renderLog()};
