@@ -304,6 +304,6 @@
 function ap(){var v=L&&go.classList.contains('rot');if(go.classList.contains('rotL')!==v)go.classList.toggle('rotL',v)}
 addEventListener('deviceorientation',function(e){if(e.gamma==null)return;if(e.gamma>40)L=true;else if(e.gamma<-40)L=false;ap()});
 new MutationObserver(ap).observe(go,{attributes:true,attributeFilter:['class']});
-document.addEventListener('click',function(){if(asked||!go.classList.contains('show'))return;asked=true;var D=window.DeviceOrientationEvent;if(D&&D.requestPermission)D.requestPermission().catch(function(){})});})();</script>
+})();</script>
 </body>
 </html>
