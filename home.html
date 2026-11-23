@@ -481,10 +481,10 @@
   function say(t){addLog('미소',t);clearInterval(timer);full=t;sayEl.textContent='';nextEl.classList.remove('on');var i=0;timer=setInterval(function(){i++;if(i%3===0&&full[i-1]!==' ')SFX.type&&SFX.type();paint(full.slice(0,i));if(i>=full.length)done()},40)}
   function paint(t){if(!/\(/.test(t)){sayEl.textContent=t;return}sayEl.innerHTML='';t.split(/(\([^)]*\)?)/).forEach(function(p){if(!p)return;if(p[0]==='('){var e=document.createElement('i');e.className=sayEl.firstChild?'mv':'mv f';e.textContent=p.replace(/^\(|\)$/g,'');sayEl.appendChild(e)}else sayEl.appendChild(document.createTextNode(p))})}
   function done(){clearInterval(timer);timer=null;paint(full);nextEl.classList.add('on')}
-  var liveFin=false;
-  function liveStart(){clearInterval(timer);full='';liveFin=false;sayEl.textContent='...';nextEl.classList.remove('on');var i=0;timer=setInterval(function(){if(i<full.length){i++;if(i%3===0&&full[i-1]!==' ')SFX.type&&SFX.type();paint(full.slice(0,i))}else if(liveFin&&full.length)done()},40)}
+  var liveFin=false,liveOn=false;
+  function liveStart(){liveOn=true;clearInterval(timer);full='';liveFin=false;sayEl.textContent='...';nextEl.classList.remove('on');var i=0;timer=setInterval(function(){if(i<full.length){i++;if(i%3===0&&full[i-1]!==' ')SFX.type&&SFX.type();paint(full.slice(0,i))}else if(liveFin&&full.length)done()},40)}
   function liveSet(t){full=t;if(timer===null)paint(full)}
-  function liveFinish(t){full=t;liveFin=true;addLog('미소',t);if(timer===null)paint(full)}
+  function liveFinish(t){liveOn=false;full=t;liveFin=true;addLog('미소',t);if(timer===null)paint(full)}
 
   var BAG=[
     ['@lp_candy.png','츄파춥스','체리맛 아니면 안 먹어요. 진짜로요.','happy'],
@@ -603,7 +603,7 @@ TMI: 별명은 채소, 까마귀(마음에 들어함). 기타 이름은 김말�
   var IDLE=['오늘 학교에서 비둘기 떼 만난 얘기 해줄까요?','헐 근데 저 오늘 정수리 뿌리 올라온 거 보여요?','김말이 한 곡 쳐줄까요? 코드는 F밖에 못 잡지만요!','지금 싸이 BGM 뭐로 바꿀지 고민 중이에요.'];
   function ask(t,silent){if(busy)return;if(!SAMPLE){var l=IDLE[Math.floor(Math.random()*IDLE.length)];say(l);face(['smile','happy','wink','winksmile'][Math.floor(Math.random()*4)]);return}
     busy=true;$('tsend').disabled=true;
-    if(!silent)addLog('나',t);hist.push({role:'user',content:silent?'(상대가 아무 말 없이 미소를 쳐다보며 기다린다. 미소가 먼저 아무 얘기나 꺼낸다. 이전과 다른 화제로.)':t});if(hist.length>16)hist=hist.slice(-16);
+    if(!silent)addLog('나',t);hist.push({role:'user',content:silent?'(상대가 화면을 톡 건드렸다. 말은 안 했지만 불만은 없다. 미소가 기분 좋게 먼저 일상 얘기나 가벼운 질문을 하나 꺼낸다. 이전과 다른 화제로. 침묵을 탓하거나 뭐라도 말해달라고 재촉하지 않는다.)':t});if(hist.length>16)hist=hist.slice(-16);
     var prevLine=full;liveStart();var fE=null;
     var d=new Date(),ctx='[지금 상황] 2004년 봄, 미소 방. 방금 전 미소가 한 말: "'+prevLine+'"';
     SAMPLE([{role:'user',content:SYS+'\n\n'+ctx+'\n\n이제부터 상대의 말이 이어진다. 형식을 꼭 지켜라.'},{role:'assistant',content:'happy\n'+(hist.length===1?prevLine:'네!')}].concat(hist),{cache:false,modelTier:'default',onText:function(T){var p=cbParse(T,false);if(!p)return;if(fE===null){fE=p.f;face(p.f)}liveSet(p.txt)}}).then(function(r){
@@ -611,12 +611,13 @@ TMI: 별명은 채소, 까마귀(마음에 들어함). 기타 이름은 김말�
       hist.push({role:'assistant',content:f+'\n'+txt});SFX.coin();liveFinish(txt||'헐, 뭐라고요?');if(fE!==f)face(f);
     }).catch(function(err){if(err&&err.code==='not_granted'){$('talk').classList.remove('on')}say('허걱, 잠깐 멍때렸어요. 다시 말해줘요!');face('shy')})
     .then(function(){busy=false;$('tsend').disabled=false;if(!silent)$('tin').focus()})}
-  (function(){var t=$('tin'),vv=window.visualViewport;
-    function fix(){if(!document.body.classList.contains('m'))return;var r=$('talk').getBoundingClientRect(),vb=vv?vv.offsetTop+vv.height:innerHeight,d=r.bottom-vb+6;if(Math.abs(d)>2)scrollBy(0,d)}
-    t.addEventListener('focus',function(){[80,300,650].forEach(function(ms){setTimeout(fix,ms)})});
-    if(vv)vv.addEventListener('resize',function(){if(document.activeElement===t)setTimeout(fix,60)})})();
+  (function(){var t=$('tin'),vv=window.visualViewport,ft=null;
+    function fix(){if(!document.body.classList.contains('m')||document.activeElement!==t)return;var r=$('talk').getBoundingClientRect(),vb=vv?vv.offsetTop+vv.height:innerHeight,d=r.bottom-vb+6;if(Math.abs(d)>8)scrollBy(0,d)}
+    function later(ms){clearTimeout(ft);ft=setTimeout(fix,ms)}
+    t.addEventListener('focus',function(){later(450)});
+    if(vv)vv.addEventListener('resize',function(){if(document.activeElement===t)later(300)})})();
   $('talk').onsubmit=function(e){e.preventDefault();var t=$('tin').value.trim();if(!t)return;$('tin').value='';ask(t)};
-  $('dlg').onclick=function(){if(timer){done();return}ask('',true)};
+  $('dlg').onclick=function(){if(timer){if(liveOn&&!full.length)return;done();return}ask('',true)};
   $('lbtn').onclick=function(e){e.stopPropagation();var o=$('log').classList.toggle('show');$('lbtn').classList.toggle('act',o);if(o)renderLog()};
   $('logX').onclick=function(){$('log').classList.remove('show');$('lbtn').classList.remove('act')};
   $('tbtn').onclick=function(e){e.stopPropagation();var o=$('talk').classList.toggle('open');$('tbtn').classList.toggle('act',o);if(o)$('tin').focus()};
