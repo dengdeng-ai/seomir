@@ -613,7 +613,7 @@ TMI: 별명은 채소, 까마귀(마음에 들어함). 기타 이름은 김말�
     .then(function(){busy=false;$('tsend').disabled=false;if(!silent)$('tin').focus()})}
   (function(){var t=$('tin'),vv=window.visualViewport,f=$('fit'),ft=null,sh=0;
     function put(v){sh=v;f.style.top=v?(-v)+'px':''}
-    function fix(){if(!document.body.classList.contains('m')||document.activeElement!==t)return;var r=$('talk').getBoundingClientRect(),vb=vv?vv.offsetTop+vv.height:innerHeight,d=Math.round(r.bottom-vb+8);if(Math.abs(d)>4)put(Math.max(0,sh+d))}
+    function fix(){if(!document.body.classList.contains('m')||document.activeElement!==t)return;var r=$('talk').getBoundingClientRect(),vb=vv?vv.pageTop+vv.height+document.documentElement.getBoundingClientRect().top:innerHeight,d=Math.round(r.bottom-vb+8);if(Math.abs(d)>4)put(Math.max(0,sh+d))}
     function later(ms){clearTimeout(ft);ft=setTimeout(fix,ms)}
     t.addEventListener('focus',function(){later(350)});
     t.addEventListener('blur',function(){clearTimeout(ft);put(0)});
