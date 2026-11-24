@@ -374,7 +374,7 @@
   #say i.mv{font-style:normal;color:#B9B0DC;opacity:.75;margin:0 2px}#say i.mv.f{margin-left:0}
 #hcur{position:fixed;inset:0;z-index:9999;pointer-events:none}#hcur i{position:absolute;left:0;right:0;height:calc(100% / 12 + 1px);transform-origin:50% 0;background:linear-gradient(rgba(255,255,255,.35) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,rgba(255,255,255,.35) 1px,transparent 1px) 0 0/24px 24px,var(--c,#E3DCF6)}#hcur.out i{animation:hcO .32s steps(6) both}@keyframes hcO{from{transform:scaleY(1)}to{transform:scaleY(0)}}
   .tbar .bx::before,.tbar .bx::after,.tbar .x::before,.tbar .x::after{content:none!important}.tbar .bx,.tbar .x{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7' shape-rendering='crispEdges' fill='%232B1E3F'%3E%3Crect x='0' y='0' width='2' height='1'/%3E%3Crect x='6' y='0' width='2' height='1'/%3E%3Crect x='1' y='1' width='2' height='1'/%3E%3Crect x='5' y='1' width='2' height='1'/%3E%3Crect x='2' y='2' width='2' height='1'/%3E%3Crect x='4' y='2' width='2' height='1'/%3E%3Crect x='3' y='3' width='2' height='1'/%3E%3Crect x='3' y='3' width='2' height='1'/%3E%3Crect x='4' y='4' width='2' height='1'/%3E%3Crect x='2' y='4' width='2' height='1'/%3E%3Crect x='5' y='5' width='2' height='1'/%3E%3Crect x='1' y='5' width='2' height='1'/%3E%3Crect x='6' y='6' width='2' height='1'/%3E%3Crect x='0' y='6' width='2' height='1'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:center!important;background-size:8px 7px!important;image-rendering:pixelated}
-  .rows li{padding:4px 0}#pop{height:336px}body.m #pop{height:404px}#pop.lk,body.m #pop.lk{height:150px;width:262px;left:12px;top:14px}body.m #pop.lk{left:12px;top:174px}
+  .rows li{padding:4px 0}#pop{height:336px}body.m #pop{height:312px}#pop.lk,body.m #pop.lk{height:150px;width:262px;left:12px;top:14px}body.m #pop.lk{left:12px;top:174px}
 </style>
 <style>img,canvas{-webkit-user-drag:none;-webkit-touch-callout:none}</style></head>
 <body><script>document.addEventListener('contextmenu',function(e){e.preventDefault()});document.addEventListener('dragstart',function(e){e.preventDefault()});</script>
@@ -611,11 +611,13 @@ TMI: 별명은 채소, 까마귀(마음에 들어함). 기타 이름은 김말�
       hist.push({role:'assistant',content:f+'\n'+txt});SFX.coin();liveFinish(txt||'헐, 뭐라고요?');if(fE!==f)face(f);
     }).catch(function(err){if(err&&err.code==='not_granted'){$('talk').classList.remove('on')}say('허걱, 잠깐 멍때렸어요. 다시 말해줘요!');face('shy')})
     .then(function(){busy=false;$('tsend').disabled=false;if(!silent)$('tin').focus()})}
-  (function(){var t=$('tin'),vv=window.visualViewport,ft=null;
-    function fix(){if(!document.body.classList.contains('m')||document.activeElement!==t)return;var r=$('talk').getBoundingClientRect(),vb=vv?vv.offsetTop+vv.height:innerHeight,d=r.bottom-vb+6;if(Math.abs(d)>8)scrollBy(0,d)}
+  (function(){var t=$('tin'),vv=window.visualViewport,f=$('fit'),ft=null,sh=0;
+    function put(v){sh=v;f.style.top=v?(-v)+'px':''}
+    function fix(){if(!document.body.classList.contains('m')||document.activeElement!==t)return;var r=$('talk').getBoundingClientRect(),vb=vv?vv.offsetTop+vv.height:innerHeight,d=Math.round(r.bottom-vb+8);if(Math.abs(d)>4)put(Math.max(0,sh+d))}
     function later(ms){clearTimeout(ft);ft=setTimeout(fix,ms)}
-    t.addEventListener('focus',function(){later(450)});
-    if(vv)vv.addEventListener('resize',function(){if(document.activeElement===t)later(300)})})();
+    t.addEventListener('focus',function(){later(350)});
+    t.addEventListener('blur',function(){clearTimeout(ft);put(0)});
+    if(vv){vv.addEventListener('resize',function(){if(document.activeElement===t)later(200)});vv.addEventListener('scroll',function(){if(document.activeElement===t)later(200)})}})();
   $('talk').onsubmit=function(e){e.preventDefault();var t=$('tin').value.trim();if(!t)return;$('tin').value='';ask(t)};
   $('dlg').onclick=function(){if(timer){if(liveOn&&!full.length)return;done();return}ask('',true)};
   $('lbtn').onclick=function(e){e.stopPropagation();var o=$('log').classList.toggle('show');$('lbtn').classList.toggle('act',o);if(o)renderLog()};
