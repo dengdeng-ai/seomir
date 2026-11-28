@@ -461,7 +461,7 @@
     if(a.game){workPending=true;openGame();say('알바 다녀올게요! 파르페 망치면 안 되는데...');face('winksmile');return}
     var l=a.L[Math.floor(Math.random()*a.L.length)];finish(a,l[0],l[1])}
   addEventListener('message',function(e){var m=e.data;if(!m||m.t!=='cb-game-result'||!workPending)return;workPending=false;var a=ACTS[2];
-    var pay=Math.round(m.money/100)*10+(m.great?5000:0);workDone=true;
+    var pay=Math.round(m.money/100)*20+(m.great?5000:0);workDone=true;
     var line=m.great?'대성공! 사장님이 보너스까지 줬어요!':m.win?'알바비 받았어요! 오늘 장사 완전 잘됐어요.':'허걱, 오늘 알바 완전 망했어요... 그래도 알바비는 받았어요.';
     var aa={id:'work',name:a.name,fx:Object.assign({},a.fx,{mood:(m.great?12:m.win?6:-6)})};finish(aa,line,m.win?'happy':'frown',pay)});
   
@@ -511,7 +511,7 @@
     var gm=res>0?1.4:res<0?.4:1,bm=res>0?.7:res<0?1.4:1,FX={};for(var k in a.fx){var v=a.fx[k],good=k==='stress'?v<0:v>0,m=(good?gm:bm)*(.8+Math.random()*.4),nv=Math.round(v*m);if(!nv)nv=v>0?1:-1;FX[k]=nv}
     ['gtr','gpa'].forEach(function(k){if(FX[k]>0)FX[k]=Math.max(1,Math.round(FX[k]*Math.max(.35,1-S[k]/160)))});
     if(a.id==='band'&&FX.gtr>0)FX.gtr+=gearB();
-    if(a.pay){pay=Math.round((6000+Math.random()*4000)/1000)*1000}
+    if(a.pay){pay=Math.round((12000+Math.random()*6000)/1000)*1000+(res>0?5000:0)}
     var fx=apply(FX);kgAdd({class:0,band:-.3,work:.25,play:-.2,rest:.3,skip:.1}[a.id]||0);if(a.money)S.money=Math.max(0,S.money+a.money);S.money+=pay;S.last=a.name;nextDay(a.id);
     var ev=null,rd=rentDue();if(SPECIAL[S.d]&&!S.ev[S.d]){S.ev[S.d]=1;ev=SPECIAL[S.d]();if(ev&&!ev.cho&&!ev.rhythm)diary(DH[S.d.slice(5)]||'이벤트',ev.t);if(rd){var rr=payRent();if(S.wl)S.wl.push(rr.t)}}else if(rd){ev=payRent()}else if(dateDue()!=null){var di=dateDue();S.dt[DATES[di].h]=1;ev={date:di}}else if(!S.wish&&!S.end&&Math.random()<.07){ev=makeWish()}
     if(S.wish&&S.d>S.wish.until){if(S.wl)S.wl.push('갖고 싶던 '+S.wish.n+'은 결국 못 샀다.');S.wish=null}else{var r=Math.random(),acc=0;for(var i=0;i<EVT.length;i++){acc+=EVT[i].p;if(r<acc){ev=EVT[i].cls&&!classDay()?null:EVT[i];break}}}
